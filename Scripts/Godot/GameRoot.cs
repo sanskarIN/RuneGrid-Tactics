@@ -34,6 +34,24 @@ public partial class GameRoot : Node
         if (session.Phase is GamePhase.Victory or GamePhase.Defeat) _services.CompleteCurrentSession();
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        if (_replayInspector is null || @event is not InputEventKey key || !key.Pressed || key.Echo) return;
+        var focused = GetViewport().GuiGetFocusOwner();
+        if (focused is LineEdit or TextEdit) return;
+        if (!ReplayInspectorShortcutMap.TryParse(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var shortcut)) return;
+
+        switch (shortcut)
+        {
+            case ReplayInspectorShortcut.Previous: _replayInspector.StepBackward(); break;
+            case ReplayInspectorShortcut.Next: _replayInspector.StepForward(); break;
+            case ReplayInspectorShortcut.Start: _replayInspector.Seek(0); break;
+            case ReplayInspectorShortcut.End: _replayInspector.Seek(_replayInspector.Player.ActionCount); break;
+            case ReplayInspectorShortcut.PlayToEnd: _replayInspector.StepToEnd(); break;
+        }
+        GetViewport().SetInputAsHandled();
+    }
+
     private void ShowMainMenu()
     {
         ReplaceScreen();
@@ -258,11 +276,12 @@ public partial class GameRoot : Node
         var advance = MakeButton("PLAY TO END", () => { inspector.StepToEnd(); }); advance.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(advance);
         command.AddChild(MakeButton("RESET INSPECTION", inspector.Reset));
         command.AddChild(MakeLabel(report.NextAction is null ? "No pending action." : $"NEXT · {FormatReplayAction(report.NextAction)}", 14, _parchment, expand: true));
+        root.AddChild(MakeLabel("KEYS · ←/→ or Space step  ·  Home/End jump  ·  P play to end", 12, new Color("AEB6AC")));
         root.AddChild(command);
 
         var scrubber = new HBoxContainer(); scrubber.AddThemeConstantOverride("separation", 10);
         scrubber.AddChild(MakeLabel($"TIMELINE {report.CurrentActionIndex}/{report.ActionCount}", 13, _route));
-        var timeline = new HSlider { MinValue = 0, MaxValue = report.ActionCount, Step = 1, Value = report.CurrentActionIndex, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, TooltipText = "Drag to rebuild and inspect a precise replay action state." };
+        var timeline = new HSlider { MinValue = 0, MaxValue = report.ActionCount, Step = 1, Value = report.CurrentActionIndex, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, FocusMode = Control.FocusModeEnum.None, TooltipText = "Drag to rebuild and inspect a precise replay action state. Keyboard: Left/Right step, Home/End jump, P play." };
         timeline.ValueChanged += value => { inspector.Seek((int)Math.Round(value)); };
         scrubber.AddChild(timeline);
         scrubber.AddChild(MakeLabel(report.CurrentActionIndex == 0 ? "OPENING STATE" : report.IsComplete ? "FINAL STATE" : $"AFTER ACTION {report.CurrentActionIndex}", 13, _parchment));
