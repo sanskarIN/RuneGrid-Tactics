@@ -115,3 +115,16 @@
 | Core contract | Added framework-independent `ReplayInspectorShortcutMap` so keyboard mapping stays unit-testable without a Godot renderer. |
 | Verification | Added accepted-key and rejected modified/unknown-key coverage; the native validator now requires the shortcut model, early key route, visible hint, and named scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **28 tests, 0 failures**. |
 | GitHub | Pushed four focused keyboard navigation, test, validation, and documentation commits ending at `e93dd34`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.7-configurable-replay-keys — Persistent replay key settings
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Local bindings | Added a save-record `ReplayInspectorKeyBindings` model with distinct defaults for previous, next, opening, final, and play-to-end commands. |
+| Settings panel | Added a **REPLAY INSPECTOR KEYS** section to native settings. Players select a command, capture one supported unmodified key, receive clear notices, can cancel with Escape, and can restore all defaults. |
+| Safety | Assignments reject duplicates and unsupported keys. Existing or imported records normalize missing, malformed, or colliding values before replay input is routed. |
+| Inspector | The key legend and timeline tooltip now reflect the player’s active saved bindings rather than static labels. |
+| Verification | Added framework-independent tests for custom assignment serialization/resolution, conflict rejection, malformed import repair, and reset behavior; validation now requires the binding model and named scenarios. Godot C# Release builds with zero warnings/errors and the native suite passes **30 tests, 0 failures**. |
+| GitHub | Pushed four focused binding, test, validation, and documentation commits ending at `54a7a19`, with repository-local author address `sanskarin@outlook.in`. |

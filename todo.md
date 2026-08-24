@@ -30,3 +30,6 @@
 - [x] Add replay inspector keyboard handling for deterministic previous, next, start, end, and playback controls.
 - [x] Add visible shortcut hints and preserve normal text-entry and focused-control behavior.
 - [x] Add shortcut tests and validation contracts, then build, test, commit, and push the native update.
+- [x] Add a persistent replay inspector key-binding model with safe defaults and conflict detection.
+- [x] Add accessible settings controls to edit and restore replay inspector key bindings.
+- [x] Route replay input through saved bindings, test persistence and conflicts, then validate, document, commit, and push the native update.
