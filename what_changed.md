@@ -74,3 +74,15 @@
 | Native validation | The repository validator now requires the snapshot/diff contracts and their diagnostic test scenarios. |
 | Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **20 passed, 0 failed**. |
 | GitHub | Pushed four focused replay diff engine, test, validation, and documentation commits, ending at `156ef89`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.4-inspector — Command-table replay inspector
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Inspector model | Added `ReplayInspector`, which tracks archived record progress, expected reconstruction, initial state, current state, fingerprint audit, action timeline, reset, single-step, and end-playback behavior. |
+| Command table | Added **INSPECT** controls in the route archive and a replay inspector screen with tactical board reconstruction, fingerprints, deterministic audit, opening-state delta, error reporting, and color-coded timeline. |
+| Service integration | Added a native `GameServices.InspectReplay` entry point that uses authored content and the existing seeded encounter factory. |
+| Verification | Added tests for inspector initial report, stepping, completion/reset, and invalid replay rendering. |
+| Native validation | The repository validator now requires inspector source, command-table controls, and inspector test coverage. |

@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.4-inspector] — 2026-08-24
+
+### Added
+
+Added a command-table replay inspector for archived records. Players can select **INSPECT** from the route archive, step through actions, play to completion, reset playback, view the reconstructed tactical board, compare current and expected fingerprints, review state deltas, and read an action timeline.
+
+### Validation
+
+Added inspector tests for initial state reporting, stepping, full playback, reset behavior, action timeline state, and rejected replay error display. Native validation now requires the replay inspector domain model, command-table controls, and test scenarios.
+
 ## [0.3.3-replay-diffs] — 2026-08-24
 
 ### Added
