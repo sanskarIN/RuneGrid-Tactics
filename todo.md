@@ -26,4 +26,4 @@
 - [x] Add inspector behavior tests and validation contracts, then build, test, commit, and push the native UI update.
 - [x] Add replay inspector seek, previous, next, and direct action-index scrub semantics.
 - [x] Add command-table timeline controls and action-row navigation that rebuild visible state deterministically.
-- [ ] Add scrub navigation tests and validation contracts, then build, test, commit, and push the update.
+- [x] Add scrub navigation tests and validation contracts, then build, test, commit, and push the update.

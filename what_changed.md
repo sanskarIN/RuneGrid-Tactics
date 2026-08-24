@@ -100,3 +100,5 @@
 | State safety | Invalid indices leave the visible inspector state untouched; a seek that reaches a malformed event surfaces that replay’s existing deterministic error. |
 | Verification | Added direct seek equality, previous/next fingerprint stability, and bounds preservation tests. |
 | Native validation | Added seek methods, scrub controls, and navigation scenario checks to the repository validator. |
+| Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **27 passed, 0 failed**. |
+| GitHub | Pushed five focused seeking, command-table UI, test, validation, and documentation commits, ending at `ae4abd1`, with repository-local author address `sanskarin@outlook.in`. |
