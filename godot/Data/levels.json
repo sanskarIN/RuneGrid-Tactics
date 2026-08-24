@@ -1,0 +1,27 @@
+[
+  {
+    "id": "sunken_causeway",
+    "mode": "Campaign",
+    "title": "The Sunken Causeway",
+    "objective": "Clear the hostile patrol.",
+    "rewardShards": 25,
+    "unlockHero": "guardian",
+    "terrainProfile": "causeway"
+  },
+  {
+    "id": "lantern_fen",
+    "mode": "Campaign",
+    "title": "The Lantern Fen",
+    "objective": "Secure the flood marker.",
+    "rewardShards": 35,
+    "terrainProfile": "fen"
+  },
+  {
+    "id": "pale_engine",
+    "mode": "BossRush",
+    "title": "The Pale Engine",
+    "objective": "Defeat the route keeper.",
+    "rewardShards": 60,
+    "terrainProfile": "engine"
+  }
+]

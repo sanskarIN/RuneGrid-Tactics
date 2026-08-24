@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "difficulty": {
+    "Field": { "reinforcedEnemyHealth": 0, "additionalEnemies": 0 },
+    "Veteran": { "reinforcedEnemyHealth": 1, "additionalEnemies": 1 },
+    "Legend": { "reinforcedEnemyHealth": 3, "additionalEnemies": 2 }
+  },
+  "terrain": {
+    "difficultMovementCost": 2,
+    "healingAmount": 3,
+    "hazardDamage": 2,
+    "destructibleIntegrity": 8
+  },
+  "rewards": {
+    "standardShards": 25,
+    "bossShards": 60,
+    "trainingMastery": 4,
+    "standardMastery": 10
+  }
+}

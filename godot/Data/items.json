@@ -1,0 +1,23 @@
+[
+  {
+    "id": "wayfinder_etching",
+    "name": "Wayfinder Etching",
+    "slot": "relic",
+    "description": "The first move each turn is marked with clarity.",
+    "rarity": "common"
+  },
+  {
+    "id": "brass_ward",
+    "name": "Brass Ward",
+    "slot": "equipment",
+    "description": "Start each field with two ward points.",
+    "rarity": "uncommon"
+  },
+  {
+    "id": "stormglass_lens",
+    "name": "Stormglass Lens",
+    "slot": "equipment",
+    "description": "Storm abilities reveal their valid route before confirmation.",
+    "rarity": "rare"
+  }
+]
