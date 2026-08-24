@@ -128,3 +128,16 @@
 | Inspector | The key legend and timeline tooltip now reflect the player’s active saved bindings rather than static labels. |
 | Verification | Added framework-independent tests for custom assignment serialization/resolution, conflict rejection, malformed import repair, and reset behavior; validation now requires the binding model and named scenarios. Godot C# Release builds with zero warnings/errors and the native suite passes **30 tests, 0 failures**. |
 | GitHub | Pushed four focused binding, test, validation, and documentation commits ending at `54a7a19`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.8-replay-shortcut-reference — In-game active-binding overlay
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Overlay access | Added **KEYS · F1** to the replay command table and an unmodified **F1** key route while inspecting a replay. |
+| Active reference | Added a modal **SHORTCUT REFERENCE** that lists the user’s current saved binding, command name, and deterministic effect for every replay action. |
+| Input safety | The overlay consumes keyboard events so viewing help cannot scrub or play the replay. It closes by F1, Escape, or an explicit close command without changing replay state. |
+| Core contract | Added a framework-independent reference builder in fixed replay-command order so active local bindings can be tested independently of Godot rendering. |
+| Verification | Added deterministic reference ordering and custom-binding coverage; native validation now requires the overlay builder, F1 route, command trigger, and close behavior. Godot C# Release builds with zero warnings/errors and the native suite passes **31 tests, 0 failures**. |
+| GitHub | Pushed four focused overlay, test, validation, and documentation commits ending at `d462261`, with repository-local author address `sanskarin@outlook.in`. |

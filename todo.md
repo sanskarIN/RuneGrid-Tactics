@@ -33,3 +33,6 @@
 - [x] Add a persistent replay inspector key-binding model with safe defaults and conflict detection.
 - [x] Add accessible settings controls to edit and restore replay inspector key bindings.
 - [x] Route replay input through saved bindings, test persistence and conflicts, then validate, document, commit, and push the native update.
+- [x] Add an in-inspector active-binding reference overlay with clear open and dismiss behavior.
+- [x] Provide command-table and keyboard overlay access without interfering with configured replay navigation.
+- [x] Add overlay validation, tests, documentation, and GitHub synchronization for the native update.
