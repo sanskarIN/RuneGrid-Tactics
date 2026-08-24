@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.2-replays] — 2026-08-24
+
+### Added
+
+Added canonical replay fingerprints and five saved-encounter determinism scenarios. The test suite now round-trips serialized replay records, verifies independent playback states after each action, resets to the exact seeded state, rejects out-of-order actions without consuming them, and distinguishes encounter seeds.
+
+### Changed
+
+Replay playback now validates recorded turns and produced tactical events before advancing. Player end-turn events are recorded explicitly, while the replayer finishes an enemy phase without inventing extra replay actions.
+
 ## [0.3.1-tests] — 2026-08-24
 
 ### Added

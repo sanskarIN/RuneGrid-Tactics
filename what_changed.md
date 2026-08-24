@@ -46,3 +46,15 @@
 | Documentation | Added `TESTING.md` and updated the README and executable build guide with exact native test commands and coverage expectations. |
 | Verification | Installed local .NET SDK 8.0.424, built `RuneGrid.Tactics.csproj` in Release with zero warnings/errors, and ran the test suite successfully: **12 passed, 0 failed**. |
 | GitHub | Pushed four focused test, runtime-boundary, CI, and documentation commits, ending at `4315590`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.2-replays — Saved encounter replay determinism
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Canonical state | Added `ReplayFingerprint`, which hashes a stable ordering of encounter identity, tiles, unit state, cooldowns, statuses, reservations, and authoritative actions. |
+| Playback integrity | Refactored `ReplayPlayer` around a deterministic encounter builder and validates turn, action type, actor, target, ability, and produced event before advancing. |
+| Action recording | Added explicit authoritative `end-turn` replay actions so player phase transitions are replayable without timing inference. |
+| Test coverage | Added saved replay JSON round-trip, independent playback, reset, malformed action order, and changed-seed fingerprint scenarios. |
+| Native validation | Added replay source contracts and required determinism scenario checks to the repository validator. |

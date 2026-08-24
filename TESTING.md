@@ -25,5 +25,11 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | Flank anchors | Opposite-side adjacent positions are discovered only when reachable and legal. |
 | Route diagnostics | Route analysis reports threat exposure, cover stops, high-ground arrival, and reservation use. |
 | Reservation state | Shared squad reservations retain a living unit’s first declared destination and ignore fallen units. |
+| Saved replay round trip | Serialized replay data rebuilds the original seeded encounter and reproduces the same canonical final fingerprint. |
+| Playback repeatability | Independent replay players produce the same fingerprint after every action in the same saved match. |
+| Replay integrity | Reset restores the seeded initial fingerprint; an out-of-order enemy event is rejected without consuming the saved action. |
+| Encounter identity | A changed saved seed produces a distinct canonical fingerprint before playback begins. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
+
+Replay actions are recorded with the authoritative turn, actor, type, target, and ability identifiers. During playback, `ReplayPlayer` validates that the source action and produced event agree before advancing its index. `ReplayFingerprint` serializes order-stable encounter, tile, unit, status, cooldown, and action state before applying the project’s deterministic hash. This makes a mismatch actionable without coupling test execution to frame timing or a rendered Godot scene.
