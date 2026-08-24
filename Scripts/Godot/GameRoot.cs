@@ -14,6 +14,7 @@ public partial class GameRoot : Node
     private GameServices _services = null!;
     private Control _screen = null!;
     private ulong _nextEnemyActionMs;
+    private ReplayInspector? _replayInspector;
 
     public override void _Ready()
     {
@@ -226,8 +227,58 @@ public partial class GameRoot : Node
         if (_services.Progression.Profile.Replays.Count == 0) root.AddChild(MakeLabel("No route has been archived yet. Complete a field to retain its deterministic record.", 17, _parchment));
         foreach (var replay in _services.Progression.Profile.Replays)
         {
-            root.AddChild(MakeButton($"{replay.Mode} · {replay.Outcome} · {replay.Actions.Count} actions · {replay.Seed}", () => StartMode(replay.Mode, replay.Seed)));
+            var entry = new HBoxContainer(); entry.AddThemeConstantOverride("separation", 8);
+            entry.AddChild(MakeLabel($"{replay.Mode} · {replay.Outcome} · {replay.Actions.Count} actions · {replay.Seed}", 15, _parchment, expand: true));
+            entry.AddChild(MakeButton("INSPECT", () => OpenReplayInspector(replay), primary: true));
+            root.AddChild(entry);
         }
+        _screen.AddChild(root);
+    }
+
+    private void OpenReplayInspector(ReplayRecord replay)
+    {
+        _replayInspector = _services.InspectReplay(replay);
+        _replayInspector.Changed += ShowReplayInspector;
+        ShowReplayInspector();
+    }
+
+    private void ShowReplayInspector()
+    {
+        if (_replayInspector is null) { ShowReplays(); return; }
+        ReplaceScreen();
+        var inspector = _replayInspector;
+        var report = inspector.BuildReport();
+        var root = MakeColumn(10); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 20);
+        root.AddChild(MakeHeader("REPLAY INSPECTOR", $"{report.Record.Mode} · {report.Record.Seed} · action {report.CurrentActionIndex}/{report.ActionCount}", ShowReplays));
+
+        var command = new HBoxContainer(); command.AddThemeConstantOverride("separation", 8);
+        var step = MakeButton(report.IsComplete ? "PLAYBACK COMPLETE" : "STEP ACTION", () => { inspector.Step(); }, primary: true); step.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(step);
+        var advance = MakeButton("PLAY TO END", () => { inspector.StepToEnd(); }); advance.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(advance);
+        command.AddChild(MakeButton("RESET INSPECTION", inspector.Reset));
+        command.AddChild(MakeLabel(report.NextAction is null ? "No pending action." : $"NEXT · {FormatReplayAction(report.NextAction)}", 14, _parchment, expand: true));
+        root.AddChild(command);
+
+        var body = new HBoxContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill }; body.AddThemeConstantOverride("separation", 10);
+        var archive = MakeColumn(8); archive.CustomMinimumSize = new Vector2(280, 0);
+        archive.AddChild(MakeLabel("ARCHIVE RECORD", 15, _route));
+        archive.AddChild(MakeLabel($"SEED\n{report.Record.Seed}\n\nMODE\n{report.Record.Mode}\n\nOUTCOME\n{report.Record.Outcome ?? "unresolved"}\n\nACTIONS\n{report.ActionCount}", 14, _parchment, wrap: true));
+        archive.AddChild(MakeLabel($"CURRENT FINGERPRINT\n{report.CurrentFingerprint}\n\nEXPECTED FINGERPRINT\n{report.ExpectedFingerprint}", 13, new Color("D4BF7E"), wrap: true));
+        body.AddChild(archive);
+
+        var board = new BoardView { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ExpandFill }; board.Bind(inspector.Player.Session); body.AddChild(board);
+
+        var audit = MakeColumn(8); audit.CustomMinimumSize = new Vector2(330, 0);
+        audit.AddChild(MakeLabel("DETERMINISM AUDIT", 15, _route));
+        audit.AddChild(MakeLabel(report.DeterminismDifference.IsMatch ? "MATCH · reconstructed state equals live replay." : report.DeterminismDifference.ToHumanReadable(), 13, report.DeterminismDifference.IsMatch ? new Color("A9D9B3") : new Color("F1A18D"), wrap: true));
+        audit.AddChild(MakeLabel("DELTA FROM INITIAL", 15, new Color("D4BF7E")));
+        audit.AddChild(MakeLabel(report.DifferenceFromInitial.ToHumanReadable(), 12, _parchment, wrap: true, expand: true));
+        if (report.IsInvalid) audit.AddChild(MakeLabel($"REPLAY REJECTED\n{report.Error}", 13, new Color("F1A18D"), wrap: true));
+        body.AddChild(audit);
+        root.AddChild(body);
+
+        var actions = MakePanel(); var rows = MakeColumn(4); actions.AddChild(rows); rows.AddChild(MakeLabel("ACTION TIMELINE", 15, _route));
+        foreach (var row in inspector.ActionRows()) rows.AddChild(MakeLabel($"{(row.IsResolved ? "✓" : row.IsCurrent ? "→" : "·")} {row.Index + 1:00}  {row.Label}", 12, row.IsCurrent ? _route : row.IsResolved ? new Color("A9D9B3") : _parchment, wrap: true));
+        root.AddChild(actions);
         _screen.AddChild(root);
     }
 
@@ -313,4 +364,5 @@ public partial class GameRoot : Node
     private CheckButton MakeToggle(string text, bool selected, Action<bool> changed) { var toggle = new CheckButton { Text = text, ButtonPressed = selected }; toggle.Toggled += value => changed(value); return toggle; }
     private Control MakeHeader(string title, string subtitle, Action back) { var row = new HBoxContainer(); row.AddChild(MakeLabel(title, 25, _parchment, expand: true)); row.AddChild(MakeLabel(subtitle, 13, _route)); row.AddChild(MakeButton("COMMAND TABLE", back)); return row; }
     private static string ModeDescription(GameMode mode) => mode switch { GameMode.Campaign => "Story route through the fractured meridian.", GameMode.Expedition => "Seeded procedural encounter with local progression.", GameMode.Daily => "Shared date-marked deterministic field.", GameMode.Weekly => "A denser weekly anomaly patrol.", GameMode.Puzzle => "Win a compact field within six turns.", GameMode.Survival => "Hold the ridge through a hostile wave.", GameMode.BossRush => "Break the Stone Brute formation.", GameMode.Custom => "Generate a fresh personal field seed.", GameMode.Training => "Practice routes, targets, and turn timing.", GameMode.Tutorial => "A guided opening field for new players.", GameMode.Endless => "Continue to a new field after every victory.", _ => "Open a tactical field." };
+    private static string FormatReplayAction(TacticalAction action) => $"T{action.Turn} · {action.ActorId} · {action.Type}" + (action.Target is { } target ? $" → {target}" : string.Empty) + (action.AbilityId is { } ability ? $" · {ability}" : string.Empty);
 }
