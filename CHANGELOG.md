@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.6-replay-shortcuts] — 2026-08-24
+
+### Added
+
+Added replay inspector keyboard navigation: **Left Arrow** moves to the previous action, **Right Arrow** or **Space** moves to the next action, **Home** and **End** rebuild the opening and final states, and **P** plays to the end. The command table displays this key legend while a replay is open.
+
+### Validation
+
+Added framework-independent shortcut mapping coverage for accepted timeline keys and rejected modified or unknown keys. Native validation now requires the key mapping contract, early Godot key input, visible hint, and test scenario.
+
 ## [0.3.5-scrubbing] — 2026-08-24
 
 ### Added

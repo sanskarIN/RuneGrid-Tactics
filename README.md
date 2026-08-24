@@ -37,13 +37,13 @@ Install the **.NET-enabled Godot 4.5 editor** and a compatible 64-bit .NET SDK. 
 
 Run the deterministic advanced pathfinding suite with `dotnet test Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj --configuration Release`. The complete native test contract is documented in [TESTING.md](TESTING.md).
 
-Archived replay records can be reviewed through **REPLAYS → INSPECT** in the command table. The inspector shows the reconstructed field, current and expected fingerprints, deterministic audit result, differences from the opening state, action timeline, rejected-action messages, and step/reset/play-to-end controls. Use the timeline slider, **PREVIOUS**, **NEXT**, or any action row to rebuild the exact post-action state without accumulating playback drift.
+Archived replay records can be reviewed through **REPLAYS → INSPECT** in the command table. The inspector shows the reconstructed field, current and expected fingerprints, deterministic audit result, differences from the opening state, action timeline, rejected-action messages, and step/reset/play-to-end controls. Use the timeline slider, **PREVIOUS**, **NEXT**, or any action row to rebuild the exact post-action state without accumulating playback drift. While inspecting, use **Left Arrow** for previous, **Right Arrow** or **Space** for next, **Home** for the opening state, **End** for the final state, and **P** to play to the end; modified key combinations and active text entry are intentionally ignored.
 
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status
 
-The source repository includes the native scene, tactical engine, local record system, export presets, release scripts, and CI workflow. This sandbox did not include Godot .NET or the .NET SDK, so final editor import, C# compilation, native export, and device smoke testing must run on a provisioned Godot .NET machine.
+The source repository includes the native scene, tactical engine, local record system, export presets, release scripts, and CI workflow. Local C# Release compilation and framework-independent test validation run with .NET 8; final editor import, native export, and device smoke testing still require a provisioned Godot 4 .NET machine.
 
 ## Support and license
 

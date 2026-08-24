@@ -33,6 +33,7 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | Human-readable mismatches | Phase, tile, unit, and action divergence report stable expected-versus-actual lines for test failure output. |
 | Command-table inspector | Inspector reports expose action progress, expected and current fingerprints, initial-state deltas, deterministic state comparison, reset, end playback, and rejected replay status. |
 | Timeline scrubbing | Direct seek, previous, next, and timeline-row selection rebuild the same canonical state that sequential playback produces; out-of-range requests preserve the visible state. |
+| Keyboard timeline navigation | Framework-independent mapping accepts unmodified Left, Right, Space, Home, End, and P keys for deterministic previous, next, opening, final, and play-to-end commands; modified and unknown keys are rejected. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
 
@@ -43,3 +44,5 @@ Replay actions are recorded with the authoritative turn, actor, type, target, an
 The command-table inspector uses the same `ReplayInspector` core model. It rebuilds an expected replay state through the current action index, compares it with the visible playback session, and displays the resulting human-readable audit next to the replay board. A deterministic replay rejection remains inspectable: the audit can match while the explicit rejection reason explains why progression stopped.
 
 Timeline scrubbing never mutates a previously rendered replay state. Instead, `Seek(actionIndex)` creates a fresh seeded replay player and replays exactly the requested number of authoritative actions. The slider and timeline rows expose post-action positions, while previous and next controls move one state at a time. This retains the same fingerprint as sequential playback and makes non-linear inspection safe for deterministic debugging.
+
+The Godot inspector routes unmodified keyboard input through the same replay inspector methods as the visible controls before a previously focused command button can react. **Left Arrow** steps backward; **Right Arrow** and **Space** step forward; **Home** and **End** rebuild opening and final states; **P** runs to the end. The timeline slider intentionally does not take keyboard focus so its command-table shortcuts remain available, and text-entry controls retain their normal behavior.
