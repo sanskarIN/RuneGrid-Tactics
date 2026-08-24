@@ -2,6 +2,16 @@
 
 All notable changes are recorded here using a Keep-a-Changelog-inspired structure.
 
+## [0.2.0-godot] — 2026-08-24
+
+### Added
+
+The repository now includes a native Godot 4 .NET C# project with JSON-authored tactical content, deterministic encounter creation, weighted pathfinding, line-of-sight, legal target previews, ability resolution, turn phases, simple deterministic enemy decisions, local save recovery, progression, replay records, native command-table UI code, export presets, platform release scripts, CI C# source validation, and complete executable build guidance.
+
+### Migration note
+
+The browser implementation is retained as a reference rather than being deleted. The current workspace did not include Godot .NET or a .NET SDK, so a machine with the documented native toolchain must perform the final C# compilation, Godot import, and executable export verification.
+
 ## [0.1.0] — 2026-08-24
 
 ### Added

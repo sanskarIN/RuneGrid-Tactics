@@ -2,6 +2,10 @@
 
 > **Mark a route. Own the turn.**
 
+## Native C# game project
+
+The repository now contains a Godot 4 .NET native implementation in [`godot/`](godot/). It uses **C#** for tactical systems and **JSON** for heroes, enemies, abilities, items, levels, and balance data. The existing React/Babylon implementation remains as a browser reference while the Godot project is the executable-focused migration path. Begin native development from [`godot/README.md`](godot/README.md) and follow [`godot/BUILD_EXECUTABLES.md`](godot/BUILD_EXECUTABLES.md) to create Windows, Linux, macOS, or Android artifacts.
+
 RuneGrid Tactics is an original, open-source, local-first tactical roguelite created by **Sanskar**. It presents a browser-deployable, Android-first command-table experience built around meaningful positioning, deterministic seeded fields, procedural encounters, elemental effects, accessibility-first controls, and locally stored progression.
 
 This project is not affiliated with or derived from any commercial game. Its heroes, enemies, tactical systems, fiction, art direction, UI language, and generated assets have been created for RuneGrid Tactics.
