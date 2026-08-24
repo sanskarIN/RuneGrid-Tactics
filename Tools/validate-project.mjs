@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(process.argv[2] ?? new URL("..", import.meta.url).pathname);
 const jsonFiles = ["heroes.json", "enemies.json", "abilities.json", "items.json", "levels.json", "balance.json"];
-const required = ["project.godot", "RuneGrid.Tactics.csproj", "Scenes/Main.tscn", "Scripts/Godot/GameRoot.cs", "Scripts/Core/GameSession.cs", "export_presets.cfg"];
+const required = ["project.godot", "RuneGrid.Tactics.csproj", "Scenes/Main.tscn", "Scripts/Godot/GameRoot.cs", "Scripts/Core/GameSession.cs", "export_presets.cfg", "Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj", "Tests/TacticalGridPathfindingTests.cs"];
 
 for (const relative of required) {
   await stat(join(root, relative));
@@ -38,9 +38,15 @@ for (const feature of ["FindTacticalRoute", "FindBestApproach", "FindFlankAnchor
 }
 if (!sessionSource.includes("ReserveSuggestedRoute")) throw new Error("Native session does not expose tactical route reservations.");
 
+const testSource = await readFile(join(root, "Tests", "TacticalGridPathfindingTests.cs"), "utf8");
+const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics"];
+for (const scenario of requiredScenarios) {
+  if (!testSource.includes(scenario)) throw new Error(`Missing pathfinding test scenario: ${scenario}`);
+}
+
 const presets = await readFile(join(root, "export_presets.cfg"), "utf8");
 for (const target of ["Windows Desktop", "Linux/X11", "Android"]) {
   if (!presets.includes(`name="${target}"`)) throw new Error(`Missing export preset: ${target}`);
 }
 
-console.log(`Godot project structure, ${jsonFiles.length} JSON content files, expanded unit classes, and advanced tactical routing validated.`);
+console.log(`Godot project structure, ${jsonFiles.length} JSON content files, expanded unit classes, advanced tactical routing, and pathfinding test coverage validated.`);
