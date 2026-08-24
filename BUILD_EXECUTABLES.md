@@ -1,6 +1,6 @@
 # Building RuneGrid Tactics Executables
 
-RuneGrid Tactics now includes a native **Godot 4 .NET** project under this directory. C# builds require both the **.NET-enabled Godot editor** and a matching 64-bit .NET SDK. Godot’s C# documentation states that Godot runs compiled C# games but does not bundle the C# build tools; current Godot 4.5 guidance requires .NET 8 or later, and Android export requires .NET 9 or later.[1]
+RuneGrid Tactics is a native **Godot 4 .NET** project. C# builds require both the **.NET-enabled Godot editor** and a matching 64-bit .NET SDK. Godot’s C# documentation states that Godot runs compiled C# games but does not bundle the C# build tools; current Godot 4.5 guidance requires .NET 8 or later, and Android export requires .NET 9 or later.[1]
 
 > This workspace did not include the Godot .NET editor or .NET SDK during implementation. The source structure, export presets, scripts, and documentation have been created, but final native executable generation must run on a machine with the toolchain installed.
 
@@ -21,10 +21,9 @@ Godot export templates are required to create playable builds. Install them thro
 
 ## 2. Open and compile the project
 
-Open the `godot/project.godot` file in Godot 4 .NET. Let Godot import the project, then use the **Build** button in the editor or run the following from a terminal:
+Open the repository-root `project.godot` file in Godot 4 .NET. Let Godot import the project, then use the **Build** button in the editor or run the following from the repository root:
 
 ```bash
-cd godot
 dotnet build RuneGrid.Tactics.csproj
 ```
 
@@ -49,14 +48,12 @@ Open **Project → Export**, choose **Windows Desktop**, set the path to `build/
 Set `GODOT4` to the path of the Godot .NET executable or ensure the executable is on `PATH`, then run:
 
 ```bash
-cd godot
 ./Tools/export-release.sh windows
 ```
 
 On PowerShell:
 
 ```powershell
-cd godot
 ./Tools/export-release.ps1 -Target windows -Godot $env:GODOT4
 ```
 

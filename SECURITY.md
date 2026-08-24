@@ -1,7 +1,7 @@
 # Security Policy
 
-RuneGrid Tactics is a client-side, local-first game. Security issues may still arise in dependency handling, import parsing, generated build output, cross-site behavior, or the local export/import boundary.
+RuneGrid Tactics is a native, local-first Godot game. Security-sensitive areas include C# dependencies, JSON import parsing, exported packages, local save integrity, Android signing, and platform credentials.
 
-Please do **not** publish a suspected vulnerability in a public issue before it is assessed. Send a concise private report to **sanskarin@outlook.in** with the affected version, reproduction steps, potential impact, and any suggested mitigation. Avoid sending real personal data or credential material.
+Do **not** publish a suspected vulnerability in a public issue before it is assessed. Send a private report to **sanskarin@outlook.in** with the affected version, reproduction steps, potential impact, and a suggested mitigation if available. Do not send real private save records, keystores, passwords, tokens, or personal data.
 
-The project validates imported save records before replacing primary local state and keeps a rolling local backup. Nevertheless, players should keep their own export before importing records received from untrusted sources. Security fixes should include a regression test whenever the affected code is testable.
+Imported local records are validated before replacement, and the application stores a rolling local backup. Players should still export their own record before importing an untrusted file. Keep `export_credentials.cfg`, Android keystores, signing keys, and CI secrets out of Git.

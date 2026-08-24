@@ -1,18 +1,13 @@
-# Roadmap
+# Native Roadmap
 
-The roadmap is a planning guide rather than a promise. Every future milestone must preserve offline core play, deterministic seeded fields, original content, local records, and accessibility controls.
+The Godot C# codebase is now the only RuneGrid Tactics product path. Every milestone must preserve offline core play, deterministic seeded fields, original content, local records, and accessibility preferences.
 
-| Version | Focus               | Intended outcome                                                                                          |
-| ------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
-| `0.1.x` | Foundation          | Playable browser tactical loop, deterministic fields, local saves, initial roster, CI, and documentation. |
-| `0.2.x` | Field depth         | More terrain behavior, objective types, encounters, equipment hooks, and expanded tactical previews.      |
-| `0.3.x` | Hero systems        | Additional original heroes, mastery milestones, cosmetics, and richer ability effects.                    |
-| `0.4.x` | Campaign expansion  | More regions, branching mission records, dialogue, lore, collectibles, and boss encounters.               |
-| `0.5.x` | Procedural modes    | Richer expedition events, modifiers, reward drafting, puzzle authoring, and survival scaling.             |
-| `0.6.x` | Progression         | Wider achievement catalogue, relic collection, codex completion, and cosmetic unlock pathways.            |
-| `0.7.x` | Replay and analysis | Timeline playback, turn navigation, replay validation, charts, and downloadable field reports.            |
-| `0.8.x` | UX polish           | Localization-ready strings, refined accessibility, touch ergonomics, audio, and visual performance.       |
-| `0.9.x` | Release candidate   | Compatibility testing, balance passes, documentation review, and browser deployment readiness.            |
-| `1.0.0` | Stable release      | First stable public release candidate with a complete verified core loop.                                 |
-
-Native Android packaging is a separate future delivery concern. It should not be treated as a superficial export: it requires platform-specific quality, interruption recovery, privacy, accessibility, and store compliance validation.
+| Version | Native focus |
+| --- | --- |
+| `0.2.x` | Validate the Godot .NET source, release desktop development builds, and smoke-test Android export. |
+| `0.3.x` | Add authored campaign regions, objective variants, terrain reactions, and richer encounter records. |
+| `0.4.x` | Expand original heroes, mastery milestones, relic drafting, equipment, and cosmetic records. |
+| `0.5.x` | Deepen expedition events, puzzles, survival scaling, and boss behaviors. |
+| `0.6.x` | Build deterministic replay timeline controls, analysis, and field-report export. |
+| `0.7.x` | Add localization-ready native UI strings, controller navigation, sound design, and Android ergonomics. |
+| `1.0.0` | Ship a stable signed native release after platform, save, accessibility, and balance verification. |

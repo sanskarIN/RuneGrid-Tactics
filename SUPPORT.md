@@ -6,4 +6,4 @@ RuneGrid Tactics is playable without purchases, donations, or account creation. 
 
 Donations never unlock combat power, interrupt a battle, or alter tactical outcomes. For gameplay help, bug reports, or accessibility feedback, use **supportramsandesh@gmail.com**. For business contact, use **sanskarin@outlook.in** or **sanskarin.business@gmail.com**.
 
-When reporting a defect, include the game version, browser, mode, seed, steps to reproduce, and whether the issue persisted after a reload. A replay export or screenshot is helpful if it does not contain data you prefer to keep private.
+When reporting a defect, include the game version, operating system or device, mode, seed, steps to reproduce, and whether the issue persisted after restarting the application. A replay export or screenshot is helpful if it does not contain data you prefer to keep private.

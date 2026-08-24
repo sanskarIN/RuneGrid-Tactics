@@ -1,16 +1,14 @@
 # Contributing to RuneGrid Tactics
 
-Thank you for improving RuneGrid Tactics. Contributions should preserve the project’s original identity, local-first stance, accessibility baseline, and data-driven tactical architecture.
+RuneGrid Tactics is a Godot 4 .NET C# project. Contributions should preserve its native-only architecture, local-first data contract, accessibility baseline, original identity, and JSON-driven content model.
 
-Begin from a focused branch such as `feature/terrain-hooks`, `fix/save-validation`, `test/pathfinding-edges`, or `docs/contribution-notes`. Configure repository-local Git identity rather than changing global configuration:
+Use focused branches such as `feature/native-terrain-hooks`, `fix/godot-save-validation`, or `test/csharp-pathfinding-edges`. Configure the repository-local author identity:
 
 ```bash
 git config user.name "Sanskar"
 git config user.email "sanskarin@outlook.in"
 ```
 
-Before a pull request, run the full validation sequence described in [BUILDING.md](BUILDING.md). Explain the player-facing outcome, data-model effect, test evidence, and accessibility implication. Avoid commits that only change timestamps, reformat unrelated files, or split one change into artificial fragments.
+Before opening a pull request, run `node Tools/validate-project.mjs .`, then run `dotnet build RuneGrid.Tactics.csproj` on a Godot .NET-ready machine. New tactical rules belong in `Scripts/Core/`; Godot scene and interface work belongs in `Scripts/Godot/`; heroes, enemies, abilities, items, levels, and balance belong in `Data/`. Do not introduce a second client stack, cloud-only progression, copyrighted game assets, fabricated reviews, or personal-data collection.
 
-New gameplay content should be represented through the records in `content.ts` whenever possible. New rules belong in the domain modules; Babylon materials and DOM markup must not be treated as a source of tactical truth. Do not add copyrighted characters, art, music, or maps from existing games. Do not add fabricated reviews, ratings, testimonials, payments, or personally identifiable data collection.
-
-All participants must follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security-sensitive reports follow [SECURITY.md](SECURITY.md).
+Follow the [Code of Conduct](CODE_OF_CONDUCT.md) and report security concerns through [SECURITY.md](SECURITY.md).

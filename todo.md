@@ -1,12 +1,10 @@
-# RuneGrid Tactics — Godot C# Migration Tasks
+# RuneGrid Tactics — Native Release Checklist
 
-- [x] Inspect the existing browser project and GitHub repository baseline for migration inputs.
-- [x] Add a Godot 4 .NET project foundation with C# build configuration and original asset references.
-- [x] Define JSON schemas and content files for heroes, enemies, abilities, items, levels, and balance values.
-- [x] Port deterministic generation, grid pathfinding, line-of-sight, movement cost, and tactical target validation to C#.
-- [x] Port turn state, ability resolution, enemy AI, replay records, local saves, progression, statistics, and achievements to C#.
-- [x] Build responsive Godot UI scenes for menu, campaign, battle, codex, settings, and local data controls.
-- [x] Write complete Godot export presets and platform-specific executable build instructions for Windows, Linux, Android, and macOS.
-- [x] Add CI-ready validation and release packaging guidance that distinguishes source verification from native Godot export verification.
-- [ ] Run the Godot .NET editor import, C# compilation, native export, and on-device smoke test on a machine with the required Godot/.NET toolchain.
-- [x] Commit and push the native migration after source-format and JSON validation complete.
+- [x] Convert the source repository to a Godot 4 .NET C#–only project.
+- [x] Move the native project, JSON content, export tools, and presets to the repository root.
+- [x] Replace non-native automation with the Godot .NET source validation workflow.
+- [x] Validate the root native project structure and JSON-authored records.
+- [ ] Commit and push the Godot-only repository conversion to GitHub.
+- [ ] Open `project.godot` in Godot 4 .NET and resolve any editor-import or script compilation findings.
+- [ ] Run `dotnet build RuneGrid.Tactics.csproj` on a toolchain-ready machine.
+- [ ] Export and smoke-test Windows, Linux, and Android native packages before release distribution.

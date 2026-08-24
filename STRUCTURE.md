@@ -1,49 +1,27 @@
-# RuneGrid Tactics — Architecture
+# RuneGrid Tactics Native Architecture
 
-## Ownership Model
-
-The project follows the game-dev layering contract:
+RuneGrid Tactics is a native Godot 4 .NET game. C# tactical rules own the game state, Godot scripts translate player input into legal requests, and JSON records define content. The board presentation never decides tactical legality.
 
 ```text
-React GameCanvas = lifecycle-safe full-screen picture frame
-Babylon scene + TacticalRenderer = board, meshes, camera, interaction picking
-GameSession + domain modules = deterministic game rules and run state
-GameUIController = DOM command interface, menus, a11y controls, input translation
-LocalSaveManager = local-first persistence, migration, backup, import/export
+Godot scene / GameRoot / BoardView
+             ↓ player input
+        GameSession
+             ↓
+TacticalGrid · EncounterFactory · ContentRepository
+             ↓
+LocalSaveRepository · ProgressionService · ReplayPlayer
+             ↓
+Godot user:// local record
 ```
 
-Gameplay modules never import React. `GameSession` is responsible for legal actions and turn state; `TacticalRenderer` is responsible for turning the current state into Babylon meshes; `GameUIController` only requests actions and renders the resulting view model.
+| Component | Responsibility |
+| --- | --- |
+| `Scripts/Core/ContentRepository.cs` | Loads enum-aware JSON content. |
+| `Scripts/Core/TacticalGrid.cs` | Owns weighted routefinding, occupancy, ranges, and line-of-sight. |
+| `Scripts/Core/EncounterFactory.cs` | Generates deterministic encounters from mode, difficulty, and seed. |
+| `Scripts/Core/GameSession.cs` | Owns turn phases, legal actions, ability resolution, AI, undo, outcomes, and replay actions. |
+| `Scripts/Core/LocalSaveRepository.cs` | Validates and writes schema-versioned local save envelopes with backup recovery. |
+| `Scripts/Godot/GameRoot.cs` | Builds the native command-table screens and sends input into the core session. |
+| `Scripts/Godot/BoardView.cs` | Draws interactive native tiles and tokens from authoritative game state. |
 
-## Core Modules
-
-| Module                | Responsibility                                             | Babylon dependency |
-| --------------------- | ---------------------------------------------------------- | ------------------ |
-| `types.ts`            | Shared tactical, progression, and save contracts           | None               |
-| `rng.ts`              | Versioned seeded pseudo-random generator                   | None               |
-| `GridModel.ts`        | Tiles, weighted pathfinding, ranges, line-of-sight         | None               |
-| `content.ts`          | Data-driven hero, ability, enemy, relic, codex content     | None               |
-| `GameSession.ts`      | Turn state machine, combat, ability resolution, AI, events | None               |
-| `Progression.ts`      | Statistics, campaign unlocks, achievements, mastery        | None               |
-| `SaveManager.ts`      | Versioned local persistence, migration, export/import      | None               |
-| `Replay.ts`           | Deterministic action history and replay metadata           | None               |
-| `TacticalRenderer.ts` | Grid, units, overlays, camera, Babylon scene ownership     | Babylon            |
-| `GameUIController.ts` | Responsive menus, HUD, a11y affordances, event bindings    | DOM                |
-| `scene.ts`            | Creates, connects, and disposes the scene graph            | Babylon + DOM      |
-
-## State Machine
-
-```text
-main-menu → briefing → player → resolving → enemy → player
-                                      ↘ victory
-                                      ↘ defeat
-```
-
-Every player command passes through validation. Every state transition emits a structured event to the renderer and command UI, preserving a single source of truth for game rules.
-
-## Data-Driven Extension Points
-
-New heroes, enemies, abilities, campaign encounters, hazards, relics, and achievements are authored in `content.ts` and configuration-shaped objects rather than embedded in rendering branches. Rendering maps known unit factions and elements to material cues, so a content addition does not require reworking rules code.
-
-## Local-First Contract
-
-The app writes a schema-versioned save envelope to browser local storage. The envelope includes settings, progression, statistics, achievements, challenge history, and the last active encounter. Validation occurs before writes and imports; an independent rolling backup supports recovery. Exports contain no personal data by default.
+Add heroes, enemies, abilities, items, levels, and balance first in `Data/`. Add tactical rules to `Scripts/Core/`, and Godot-specific presentation to `Scripts/Godot/`. The repository has one native application path.
