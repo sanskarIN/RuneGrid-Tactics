@@ -88,3 +88,15 @@
 | Native validation | The repository validator now requires inspector source, command-table controls, and inspector test coverage. |
 | Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **24 passed, 0 failed**. |
 | GitHub | Pushed five focused inspector model, command-table UI, test, validation, and documentation commits, ending at `d44c124`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.5-scrubbing — Replay inspector timeline navigation
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Deterministic seek | Added `Seek(actionIndex)`, `StepBackward`, and `StepForward` to rebuild replay state from the original seed at any valid action position. |
+| Command table | Added a discrete timeline slider, previous/next controls, action-position labels, and clickable action rows that scrub to the state after the selected action. |
+| State safety | Invalid indices leave the visible inspector state untouched; a seek that reaches a malformed event surfaces that replay’s existing deterministic error. |
+| Verification | Added direct seek equality, previous/next fingerprint stability, and bounds preservation tests. |
+| Native validation | Added seek methods, scrub controls, and navigation scenario checks to the repository validator. |

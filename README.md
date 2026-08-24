@@ -37,7 +37,7 @@ Install the **.NET-enabled Godot 4.5 editor** and a compatible 64-bit .NET SDK. 
 
 Run the deterministic advanced pathfinding suite with `dotnet test Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj --configuration Release`. The complete native test contract is documented in [TESTING.md](TESTING.md).
 
-Archived replay records can be reviewed through **REPLAYS → INSPECT** in the command table. The inspector shows the reconstructed field, current and expected fingerprints, deterministic audit result, differences from the opening state, action timeline, rejected-action messages, and step/reset/play-to-end controls.
+Archived replay records can be reviewed through **REPLAYS → INSPECT** in the command table. The inspector shows the reconstructed field, current and expected fingerprints, deterministic audit result, differences from the opening state, action timeline, rejected-action messages, and step/reset/play-to-end controls. Use the timeline slider, **PREVIOUS**, **NEXT**, or any action row to rebuild the exact post-action state without accumulating playback drift.
 
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 

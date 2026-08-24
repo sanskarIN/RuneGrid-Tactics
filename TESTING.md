@@ -32,6 +32,7 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | Snapshot equality | Equivalent canonical snapshots produce no differences and a clear successful comparison message. |
 | Human-readable mismatches | Phase, tile, unit, and action divergence report stable expected-versus-actual lines for test failure output. |
 | Command-table inspector | Inspector reports expose action progress, expected and current fingerprints, initial-state deltas, deterministic state comparison, reset, end playback, and rejected replay status. |
+| Timeline scrubbing | Direct seek, previous, next, and timeline-row selection rebuild the same canonical state that sequential playback produces; out-of-range requests preserve the visible state. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
 
@@ -40,3 +41,5 @@ Replay actions are recorded with the authoritative turn, actor, type, target, an
 `ReplayStateDiffGenerator` is the companion diagnostic path. It compares canonical snapshots in a fixed order and prints concise lines such as `phase: expected Player, actual Enemy` or `unit hero-scout: expected [...], actual [...]`. Replay equivalence tests include this text as their assertion message, so a fingerprint mismatch identifies its first concrete state difference directly in native test output.
 
 The command-table inspector uses the same `ReplayInspector` core model. It rebuilds an expected replay state through the current action index, compares it with the visible playback session, and displays the resulting human-readable audit next to the replay board. A deterministic replay rejection remains inspectable: the audit can match while the explicit rejection reason explains why progression stopped.
+
+Timeline scrubbing never mutates a previously rendered replay state. Instead, `Seek(actionIndex)` creates a fresh seeded replay player and replays exactly the requested number of authoritative actions. The slider and timeline rows expose post-action positions, while previous and next controls move one state at a time. This retains the same fingerprint as sequential playback and makes non-linear inspection safe for deterministic debugging.

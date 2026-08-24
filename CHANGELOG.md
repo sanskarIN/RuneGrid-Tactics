@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.5-scrubbing] — 2026-08-24
+
+### Added
+
+Added deterministic timeline scrubbing to the command-table replay inspector. The inspector now supports a discrete timeline slider, direct action-row selection, previous and next controls, and exact state reconstruction at any archived action position.
+
+### Validation
+
+Added native tests for direct seek equality, previous/next fingerprint stability, and out-of-range seek preservation. The replay inspector validator now requires scrubbing methods, slider controls, and navigation scenarios.
+
 ## [0.3.4-inspector] — 2026-08-24
 
 ### Added

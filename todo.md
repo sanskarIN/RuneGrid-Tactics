@@ -24,3 +24,6 @@
 - [x] Add replay inspector state that exposes archived record playback, fingerprints, and canonical differences.
 - [x] Build the command-table replay inspector screen with replay selection, step/reset controls, state panels, and mismatch rendering.
 - [x] Add inspector behavior tests and validation contracts, then build, test, commit, and push the native UI update.
+- [x] Add replay inspector seek, previous, next, and direct action-index scrub semantics.
+- [x] Add command-table timeline controls and action-row navigation that rebuild visible state deterministically.
+- [ ] Add scrub navigation tests and validation contracts, then build, test, commit, and push the update.
