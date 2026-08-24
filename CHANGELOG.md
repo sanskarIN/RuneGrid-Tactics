@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.9-replay-onboarding] — 2026-08-24
+
+### Added
+
+Added a first-time **INTRODUCING REPLAY INSPECTOR** tooltip. It explains deterministic replay review, directs players to **VIEW SHORTCUTS** and **F1**, and records acknowledgement locally through **GOT IT** or the shortcut-reference route so later inspections remain unobstructed.
+
+### Validation
+
+Added serialized onboarding-state coverage and native validation requirements for onboarding persistence, tooltip composition, acknowledgement, and shortcut-reference entry.
+
 ## [0.3.8-replay-shortcut-reference] — 2026-08-24
 
 ### Added

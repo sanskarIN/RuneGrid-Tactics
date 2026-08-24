@@ -43,6 +43,8 @@ Replay inspector commands are configurable from **SETTINGS & ACCESSIBILITY → R
 
 While viewing a replay, press **F1** or select **KEYS · F1** to open the in-game **SHORTCUT REFERENCE** overlay. It lists the player’s active saved bindings and explains each deterministic timeline action. The overlay safely pauses replay keyboard navigation until dismissed with **F1**, **Escape**, or **CLOSE REFERENCE**.
 
+On the first replay inspection, a local **INTRODUCING REPLAY INSPECTOR** tooltip explains deterministic action review and points directly to **VIEW SHORTCUTS** and **F1**. Selecting **GOT IT** or **VIEW SHORTCUTS** marks the guidance as seen in the local record, so it does not reappear on later inspector sessions.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status
