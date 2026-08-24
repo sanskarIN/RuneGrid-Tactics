@@ -497,6 +497,24 @@ public sealed class TacticalGridPathfindingTests
         Assert.Equal(ReplayInspectorShortcut.Next, defaultNext);
     }
 
+    [Fact]
+    public void ReplayInspectorShortcutReference_ListsActiveBindingsInStableCommandOrder()
+    {
+        var bindings = ReplayInspectorKeyBindings.CreateDefault();
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.Previous, "A", out _));
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.Next, "D", out _));
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.Start, "Page Up", out _));
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.End, "Page Down", out _));
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.PlayToEnd, "Q", out _));
+
+        var reference = ReplayInspectorShortcutReference.Build(bindings);
+
+        Assert.Equal(new[] { ReplayInspectorShortcut.Previous, ReplayInspectorShortcut.Next, ReplayInspectorShortcut.Start, ReplayInspectorShortcut.End, ReplayInspectorShortcut.PlayToEnd }, reference.Select(line => line.Shortcut));
+        Assert.Equal(new[] { "A", "D", "Page Up", "Page Down", "Q" }, reference.Select(line => line.Binding));
+        Assert.Equal("Previous action", reference[0].Command);
+        Assert.Equal("Resolve every remaining authoritative action.", reference[^1].Description);
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
