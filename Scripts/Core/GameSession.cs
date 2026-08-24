@@ -49,12 +49,45 @@ public sealed class GameSession
         var ability = SelectedAbility;
         if (ability is not null)
             return new TacticalHighlights { Targets = ValidAbilityTargets(unit, ability).ToHashSet(), Danger = danger, Selected = unit.Position };
+
+        var options = BuildRouteOptions(unit, RouteIntent.Safe);
+        var nearestOpponent = Encounter.Units.Where(candidate => candidate.IsAlive && candidate.Faction != unit.Faction)
+            .OrderBy(candidate => unit.Position.ManhattanDistance(candidate.Position)).FirstOrDefault();
+        var suggested = nearestOpponent is null
+            ? null
+            : Encounter.Grid.FindBestApproach(unit.Position, nearestOpponent.Position, Encounter.Units, unit.Template.Movement, unit.Id, options);
+        var flanks = nearestOpponent is null
+            ? new HashSet<GridPoint>()
+            : Encounter.Grid.FindFlankAnchors(unit.Position, nearestOpponent.Position, Encounter.Units, unit.Template.Movement, unit.Id, options);
         return new TacticalHighlights
         {
-            Reachable = Encounter.Grid.Reachable(unit.Position, unit.Template.Movement, Encounter.Units, unit.Id).Keys.ToHashSet(),
+            Reachable = Encounter.Grid.Reachable(unit.Position, unit.Template.Movement, Encounter.Units, unit.Id, options).Keys.ToHashSet(),
             Danger = danger,
+            Cover = Encounter.Grid.PointsInRange(unit.Position, unit.Template.Movement).Where(point => Encounter.Grid.CoverAt(point) > 0).ToHashSet(),
+            FlankAnchors = flanks,
+            SuggestedRoute = suggested?.Path ?? Array.Empty<GridPoint>(),
             Selected = unit.Position
         };
+    }
+
+    public bool ReserveRoute(string unitId, GridPoint destination)
+    {
+        if (Phase != GamePhase.Player) return false;
+        var unit = LivingHeroes.SingleOrDefault(candidate => candidate.Id == unitId);
+        if (unit is null) return false;
+        var route = Encounter.Grid.FindTacticalRoute(unit.Position, destination, Encounter.Units, unit.Template.Movement, unit.Id, BuildRouteOptions(unit, RouteIntent.Safe));
+        if (route is null) return false;
+        unit.ReservedDestination = destination;
+        LogMessage($"{unit.Template.Name} reserves {destination} for the squad route plan.");
+        StateChanged?.Invoke();
+        return true;
+    }
+
+    public bool ReserveSuggestedRoute()
+    {
+        var unit = SelectedUnit;
+        var route = GetHighlights().SuggestedRoute;
+        return unit is not null && route.Count > 0 && ReserveRoute(unit.Id, route[^1]);
     }
 
     public bool SelectUnit(string unitId)
@@ -136,12 +169,18 @@ public sealed class GameSession
         }
         else
         {
-            var path = Encounter.Grid.FindPath(enemy.Position, target.Position, Encounter.Units, enemy.Template.Movement, enemy.Id);
-            if (path is { Count: > 0 })
+            var intent = enemy.Template.AiProfile switch
             {
-                enemy.Position = path[Math.Min(path.Count, enemy.Template.Movement) - 1];
+                "ambusher" => RouteIntent.Flank,
+                "controller" or "support" => RouteIntent.Safe,
+                _ => TacticalClassRules.PreferredRoute(enemy.Template)
+            };
+            var route = Encounter.Grid.FindBestApproach(enemy.Position, target.Position, Encounter.Units, enemy.Template.Movement, enemy.Id, BuildRouteOptions(enemy, intent));
+            if (route is { Path.Count: > 0 })
+            {
+                enemy.Position = route.Path[^1];
                 ApplyTileEffect(enemy);
-                LogMessage($"{enemy.Template.Name} advances through the field.");
+                LogMessage($"{enemy.Template.Name} advances along a {(intent == RouteIntent.Flank ? "flank" : "covered")} route.");
             }
             enemy.Moved = true;
             enemy.Acted = true;
@@ -175,19 +214,20 @@ public sealed class GameSession
             StateChanged?.Invoke();
             return false;
         }
-        var path = Encounter.Grid.FindPath(unit.Position, target, Encounter.Units, unit.Template.Movement, unit.Id);
-        if (path is not { Count: > 0 })
+        var route = Encounter.Grid.FindTacticalRoute(unit.Position, target, Encounter.Units, unit.Template.Movement, unit.Id, BuildRouteOptions(unit, RouteIntent.Safe));
+        if (route is not { Path.Count: > 0 })
         {
             LogMessage("That route is blocked or exceeds the movement allowance.");
             StateChanged?.Invoke();
             return false;
         }
         CaptureUndo();
-        unit.Position = path[^1];
+        unit.Position = route.Path[^1];
+        unit.ReservedDestination = null;
         unit.Moved = true;
         ApplyTileEffect(unit);
         Record(unit, "move", unit.Position, null, $"{unit.Template.Name} marked a route.");
-        LogMessage($"{unit.Template.Name} moved {path.Count} tile{(path.Count == 1 ? string.Empty : "s")}.");
+        LogMessage($"{unit.Template.Name} moved {route.Path.Count} tile{(route.Path.Count == 1 ? string.Empty : "s")}; tactical cost {route.TacticalCost}.");
         CheckOutcome();
         StateChanged?.Invoke();
         return true;
@@ -229,7 +269,7 @@ public sealed class GameSession
             var ally = Encounter.Units.SingleOrDefault(candidate => candidate.IsAlive && candidate.Position == target && candidate.Faction == unit.Faction);
             if (ally is not null)
             {
-                var restored = Math.Min(ability.Power, ally.Template.MaxHealth - ally.Health);
+                var restored = Math.Min(ability.Power + TacticalClassRules.HealingBonus(unit), ally.Template.MaxHealth - ally.Health);
                 ally.Health += restored;
                 LogMessage($"{ally.Template.Name} restores {restored} health.");
             }
@@ -284,7 +324,7 @@ public sealed class GameSession
 
     private void Damage(UnitState attacker, UnitState target, AbilityDefinition ability)
     {
-        var amount = Math.Max(1, attacker.Template.Attack + ability.Power - target.Template.Defense);
+        var amount = Math.Max(1, attacker.Template.Attack + ability.Power + TacticalClassRules.DamageBonus(attacker, target, ability) - target.Template.Defense);
         if (ability.Element == ElementKind.Fire && target.Statuses.ContainsKey("rooted")) amount += 2;
         if (ability.Element == ElementKind.Storm && target.Statuses.ContainsKey("chilled")) target.Statuses["stagger"] = 1;
         var absorbed = Math.Min(target.Shield, amount);
@@ -326,6 +366,7 @@ public sealed class GameSession
             unit.Energy = Math.Min(unit.Template.Energy, unit.Energy + 1);
             foreach (var id in unit.Cooldowns.Keys.ToList()) unit.Cooldowns[id] = Math.Max(0, unit.Cooldowns[id] - 1);
             foreach (var id in unit.Statuses.Keys.ToList()) unit.Statuses[id] = Math.Max(0, unit.Statuses[id] - 1);
+            unit.ReservedDestination = null;
         }
         Phase = GamePhase.Player;
         _enemyPhaseFinished = true;
@@ -359,9 +400,25 @@ public sealed class GameSession
 
     private static UnitState CloneUnit(UnitState source)
     {
-        var copy = new UnitState { Id = source.Id, Template = source.Template, Position = source.Position, Health = source.Health, Energy = source.Energy, Shield = source.Shield, Moved = source.Moved, Acted = source.Acted };
+        var copy = new UnitState { Id = source.Id, Template = source.Template, Position = source.Position, Health = source.Health, Energy = source.Energy, Shield = source.Shield, Moved = source.Moved, Acted = source.Acted, ReservedDestination = source.ReservedDestination };
         foreach (var (id, value) in source.Cooldowns) copy.Cooldowns[id] = value;
         foreach (var (id, value) in source.Statuses) copy.Statuses[id] = value;
         return copy;
+    }
+
+    private RouteOptions BuildRouteOptions(UnitState unit, RouteIntent intent)
+    {
+        var hostileThreat = Encounter.Units.Where(candidate => candidate.IsAlive && candidate.Faction != unit.Faction)
+            .SelectMany(candidate => Encounter.Grid.PointsInRange(candidate.Position, candidate.Template.Movement + 1)).ToHashSet();
+        return new RouteOptions
+        {
+            Mobility = unit.Template.Mobility,
+            Intent = intent,
+            ThreatenedTiles = hostileThreat,
+            Reservations = Encounter.Grid.BuildReservations(Encounter.Units),
+            ReservationOwnerId = unit.Id,
+            ThreatPenalty = TacticalClassRules.ThreatPenalty(unit.Template),
+            CoverReward = TacticalClassRules.CoverReward(unit.Template)
+        };
     }
 }

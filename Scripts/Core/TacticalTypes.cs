@@ -8,6 +8,9 @@ public enum AbilityShape { Single, Area, Line, Self }
 public enum GamePhase { Briefing, Player, Resolving, Enemy, Victory, Defeat }
 public enum GameMode { Campaign, Expedition, Daily, Weekly, Puzzle, Survival, BossRush, Custom, Training, Tutorial, Endless }
 public enum Difficulty { Field, Veteran, Legend }
+public enum MobilityProfile { Standard, Trailblazer, Skirmisher, Juggernaut, Phasewalker, Winged }
+public enum RouteIntent { Direct, Safe, Flank, Fastest }
+public enum TacticalClass { Vanguard, Channeler, Pathfinder, Warden, Duelist, Runesmith, Seer, Skywarden, Sapper, Sentinel, Harrier, Stalker, Artillery, Support }
 
 public readonly record struct GridPoint(int X, int Y)
 {
@@ -22,7 +25,31 @@ public sealed class Tile
     public int Elevation { get; set; }
     public int? Integrity { get; set; }
     public GridPoint? LinkedTo { get; set; }
+    public int CoverValue { get; set; }
+    public bool IsHighGround { get; set; }
 }
+
+public sealed class RouteOptions
+{
+    public MobilityProfile Mobility { get; init; } = MobilityProfile.Standard;
+    public RouteIntent Intent { get; init; } = RouteIntent.Direct;
+    public int HazardPenalty { get; init; } = 5;
+    public int ThreatPenalty { get; init; } = 2;
+    public int ReservationPenalty { get; init; } = 4;
+    public int CoverReward { get; init; } = 1;
+    public IReadOnlySet<GridPoint> ThreatenedTiles { get; init; } = new HashSet<GridPoint>();
+    public IReadOnlyDictionary<GridPoint, string> Reservations { get; init; } = new Dictionary<GridPoint, string>();
+    public string? ReservationOwnerId { get; init; }
+}
+
+public sealed record RouteAnalysis(
+    IReadOnlyList<GridPoint> Path,
+    int TravelCost,
+    int TacticalCost,
+    int ThreatenedSteps,
+    int CoverStops,
+    bool UsesReservation,
+    bool ReachesHighGround);
 
 public sealed class AbilityDefinition
 {
@@ -59,6 +86,9 @@ public sealed class UnitTemplate
     public IReadOnlyList<string> AbilityIds { get; init; } = Array.Empty<string>();
     public string? AiProfile { get; init; }
     public required string Color { get; init; }
+    public MobilityProfile Mobility { get; init; } = MobilityProfile.Standard;
+    public IReadOnlyList<string> RoleTags { get; init; } = Array.Empty<string>();
+    public TacticalClass TacticalClass { get; init; } = TacticalClass.Vanguard;
 }
 
 public sealed class ItemDefinition
@@ -123,6 +153,7 @@ public sealed class UnitState
     public bool Acted { get; set; }
     public Dictionary<string, int> Cooldowns { get; } = new();
     public Dictionary<string, int> Statuses { get; } = new();
+    public GridPoint? ReservedDestination { get; set; }
     public bool IsAlive => Health > 0;
     public Faction Faction => Template.Faction;
 }
@@ -151,5 +182,8 @@ public sealed class TacticalHighlights
     public IReadOnlySet<GridPoint> Reachable { get; init; } = new HashSet<GridPoint>();
     public IReadOnlySet<GridPoint> Targets { get; init; } = new HashSet<GridPoint>();
     public IReadOnlySet<GridPoint> Danger { get; init; } = new HashSet<GridPoint>();
+    public IReadOnlySet<GridPoint> Cover { get; init; } = new HashSet<GridPoint>();
+    public IReadOnlySet<GridPoint> FlankAnchors { get; init; } = new HashSet<GridPoint>();
+    public IReadOnlyList<GridPoint> SuggestedRoute { get; init; } = Array.Empty<GridPoint>();
     public GridPoint? Selected { get; init; }
 }
