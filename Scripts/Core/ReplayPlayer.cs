@@ -17,6 +17,8 @@ public sealed class ReplayPlayer
     public int CurrentActionIndex => _index;
     public int ActionCount => _record.Actions.Count;
     public bool IsComplete => _index >= _record.Actions.Count;
+    public ReplayRecord Record => _record;
+    public TacticalAction? NextAction => IsComplete ? null : _record.Actions[_index];
     public string? LastError { get; private set; }
     public bool IsInvalid => LastError is not null;
     public string Fingerprint => ReplayFingerprint.Create(Session, _record);

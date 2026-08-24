@@ -33,6 +33,8 @@ public partial class GameServices : Node
         return CurrentSession;
     }
 
+    public ReplayInspector InspectReplay(ReplayRecord record) => new(record, (seed, mode, difficulty) => Encounters.Create(seed, mode, difficulty), Content.Abilities);
+
     public void CompleteCurrentSession()
     {
         if (CurrentSession is null || CurrentSession.Phase is not (GamePhase.Victory or GamePhase.Defeat)) return;
