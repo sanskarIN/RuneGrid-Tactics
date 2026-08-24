@@ -27,6 +27,12 @@ Open the repository-root `project.godot` file in Godot 4 .NET. Let Godot import 
 dotnet build RuneGrid.Tactics.csproj
 ```
 
+Run the deterministic core-pathfinding suite before exporting a package. The test project links the pure C# grid contracts directly, so these tests do not require launching a Godot scene:
+
+```bash
+dotnet test Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj --configuration Release
+```
+
 Godot generates or maintains the C# solution and project files as part of its .NET workflow. Commit the `.csproj` and solution when generated; exclude the `.godot` cache and `.godot/mono` cache from source control.[1]
 
 To run the native project from the editor, press **F6** for the current scene or **F5** for the configured main scene. A successful run opens the native command table, where every mode starts a deterministic C# tactical encounter.
@@ -76,6 +82,7 @@ For Android, first configure the Android SDK, JDK, template, and keystore throug
 | Check              | Required evidence                                                                                                |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | C# compilation     | `dotnet build RuneGrid.Tactics.csproj` exits successfully.                                                       |
+| Pathfinding suite  | `dotnet test Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj --configuration Release` exits successfully.       |
 | Godot import       | Open `project.godot` in the .NET editor with no parser errors.                                                   |
 | Core play          | Start a field, select a hero, move, use an ability, end the turn, complete or lose a field, and reopen the save. |
 | Local data         | Export a record, import it back, and verify a malformed file is rejected without replacing the existing record.  |

@@ -35,6 +35,8 @@ The C# grid engine supports weighted movement, mobility-specific terrain treatme
 
 Install the **.NET-enabled Godot 4.5 editor** and a compatible 64-bit .NET SDK. Open [`project.godot`](project.godot), build the C# project in the editor, and press **F5**. See [BUILD_EXECUTABLES.md](BUILD_EXECUTABLES.md) for complete Windows, Linux, macOS, and Android executable guidance, and [STRUCTURE.md](STRUCTURE.md) for the architecture.
 
+Run the deterministic advanced pathfinding suite with `dotnet test Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj --configuration Release`. The complete native test contract is documented in [TESTING.md](TESTING.md).
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status

@@ -32,3 +32,16 @@
 | Roster persistence | Existing and new local profiles receive the expanded native hero roster through a progression migration helper. |
 | Validation | The repository validator now checks expanded units, class metadata, ability links, route APIs, export presets, and JSON content. |
 | GitHub | Pushed four focused commits for navigation, roster roles, validation, and documentation, ending at `70a9294`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.1-tests — Comprehensive native pathfinding tests
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Test project | Added `Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj`, a standalone .NET 8 xUnit project that links only framework-independent C# tactical contracts. |
+| Test coverage | Added twelve deterministic unit tests for movement profiles, hazards, difficult terrain, phasewalker wall traversal safety, safe and fast route intents, reservations, occupied-target approaches, flank anchors, route diagnostics, high ground, cover, and living-unit reservation filtering. |
+| Build boundary | Excluded `Tests/**/*.cs` from the Godot runtime assembly so the game and test runner compile independently. |
+| CI | Extended the Godot .NET workflow to restore and execute the pathfinding test project after the native C# Release build. |
+| Documentation | Added `TESTING.md` and updated the README and executable build guide with exact native test commands and coverage expectations. |
+| Verification | Installed local .NET SDK 8.0.424, built `RuneGrid.Tactics.csproj` in Release with zero warnings/errors, and ran the test suite successfully: **12 passed, 0 failed**. |

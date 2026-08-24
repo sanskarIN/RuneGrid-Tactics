@@ -2,6 +2,20 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.1-tests] — 2026-08-24
+
+### Added
+
+Added a standalone .NET 8 xUnit project containing twelve deterministic advanced-pathfinding tests. The suite covers standard, Trailblazer, Winged, and Phasewalker movement; threat-safe and fastest routes; shared and owner reservations; legal approaches to occupied targets; flank anchors; route diagnostics; and reservation-state filtering.
+
+### Changed
+
+The Godot runtime project now excludes test source from its runtime assembly. The native CI workflow restores and executes the test suite after compiling the Godot C# project. Native callback delegates were corrected during full C# compilation.
+
+### Validation
+
+The Godot C# Release build completed with zero warnings and zero errors. All twelve pathfinding tests passed under .NET SDK 8.0.424.
+
 ## [0.3.0-tactics] — 2026-08-24
 
 ### Added
