@@ -102,3 +102,16 @@
 | Native validation | Added seek methods, scrub controls, and navigation scenario checks to the repository validator. |
 | Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **27 passed, 0 failed**. |
 | GitHub | Pushed five focused seeking, command-table UI, test, validation, and documentation commits, ending at `ae4abd1`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.6-replay-shortcuts — Replay inspector keyboard navigation
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Keyboard controls | Added unmodified **Left Arrow** for previous, **Right Arrow** or **Space** for next, **Home** for the opening state, **End** for the final state, and **P** for play-to-end. |
+| Input safety | The Godot key handler ignores modified shortcuts, key-repeat events, and active text-entry controls; the timeline slider does not capture keyboard focus. |
+| Command table | Added a persistent in-inspector key legend and a timeline tooltip that identifies the available keyboard commands. |
+| Core contract | Added framework-independent `ReplayInspectorShortcutMap` so keyboard mapping stays unit-testable without a Godot renderer. |
+| Verification | Added accepted-key and rejected modified/unknown-key coverage; the native validator now requires the shortcut model, early key route, visible hint, and named scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **28 tests, 0 failures**. |
+| GitHub | Pushed four focused keyboard navigation, test, validation, and documentation commits ending at `e93dd34`, with repository-local author address `sanskarin@outlook.in`. |

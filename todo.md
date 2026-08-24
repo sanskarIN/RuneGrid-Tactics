@@ -27,3 +27,6 @@
 - [x] Add replay inspector seek, previous, next, and direct action-index scrub semantics.
 - [x] Add command-table timeline controls and action-row navigation that rebuild visible state deterministically.
 - [x] Add scrub navigation tests and validation contracts, then build, test, commit, and push the update.
+- [x] Add replay inspector keyboard handling for deterministic previous, next, start, end, and playback controls.
+- [x] Add visible shortcut hints and preserve normal text-entry and focused-control behavior.
+- [x] Add shortcut tests and validation contracts, then build, test, commit, and push the native update.
