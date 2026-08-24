@@ -2,8 +2,15 @@ namespace RuneGrid.Tactics.Core;
 
 public sealed class ProgressionService
 {
+    private static readonly string[] NativeRoster = ["vanguard", "runemage", "ranger", "guardian", "duelist", "runesmith", "seer", "skywarden"];
     public PlayerProfile Profile { get; }
     public ProgressionService(PlayerProfile profile) => Profile = profile;
+
+    public void EnsureNativeRoster()
+    {
+        foreach (var heroId in NativeRoster)
+            if (!Profile.UnlockedHeroes.Contains(heroId)) Profile.UnlockedHeroes.Add(heroId);
+    }
 
     public void RecordHeroUse(string templateId) => Profile.Statistics.MostUsedHeroes[templateId] = Profile.Statistics.MostUsedHeroes.GetValueOrDefault(templateId) + 1;
     public void RecordAbilityUse(string abilityId) => Profile.Statistics.MostUsedAbilities[abilityId] = Profile.Statistics.MostUsedAbilities.GetValueOrDefault(abilityId) + 1;

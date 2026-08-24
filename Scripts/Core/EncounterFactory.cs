@@ -31,15 +31,18 @@ public sealed class EncounterFactory
         var width = mode == GameMode.Puzzle ? 7 : 9;
         var height = mode == GameMode.Puzzle ? 6 : 7;
         var grid = BuildGrid(random, width, height);
-        var heroes = new[]
+        var heroIds = mode switch
         {
-            MakeUnit(_content.Heroes["vanguard"], new GridPoint(0, height - 2), "hero-vanguard"),
-            MakeUnit(_content.Heroes["runemage"], new GridPoint(1, height - 1), "hero-runemage"),
-            MakeUnit(_content.Heroes["ranger"], new GridPoint(2, height - 1), "hero-ranger")
+            GameMode.Training or GameMode.Tutorial => new[] { "vanguard", "runemage", "ranger" },
+            GameMode.BossRush => new[] { "vanguard", "runesmith", "seer", "guardian" },
+            GameMode.Survival or GameMode.Endless => new[] { "duelist", "runesmith", "skywarden", "guardian" },
+            _ => new[] { "vanguard", "duelist", "seer", "skywarden" }
         };
+        var heroSpawns = new[] { new GridPoint(0, height - 2), new GridPoint(1, height - 1), new GridPoint(2, height - 1), new GridPoint(0, height - 1) };
+        var heroes = heroIds.Select((id, index) => MakeUnit(_content.Heroes[id], heroSpawns[index], $"hero-{id}")).ToArray();
         var enemyPool = mode == GameMode.BossRush
             ? new[] { "stone_brute", "ash_raider", "frost_wisp" }
-            : new[] { "ash_raider", "frost_wisp", "void_scout", "thorn_caster" };
+            : new[] { "ash_raider", "frost_wisp", "void_scout", "thorn_caster", "iron_sentinel", "gale_harrier", "cinder_artillery", "shade_stalker" };
         var difficultyBalance = _content.Balance.Difficulty[difficulty.ToString()];
         var reinforcement = difficultyBalance.AdditionalEnemies;
         var candidateTiles = random.Shuffle(grid.Tiles.Where(tile => tile.Position.X >= width / 2 && tile.Kind is not TileKind.Wall and not TileKind.Gate).ToList());
@@ -75,7 +78,9 @@ public sealed class EncounterFactory
             var tile = tiles.Single(candidate => candidate.Position == point);
             if (protectedPoints.Contains(point) || tile.Kind != TileKind.Floor) continue;
             tile.Kind = random.Pick(featureKinds);
-            tile.Elevation = tile.Kind == TileKind.Wall ? 1 : 0;
+            tile.Elevation = tile.Kind == TileKind.Wall ? 1 : random.Chance(0.16f) ? 1 : 0;
+            tile.IsHighGround = tile.Elevation > 0 && tile.Kind != TileKind.Wall;
+            tile.CoverValue = tile.Kind is TileKind.Destructible or TileKind.Difficult ? 1 : tile.IsHighGround ? 2 : 0;
             tile.Integrity = tile.Kind == TileKind.Destructible ? 8 : null;
         }
         var teleports = tiles.Where(tile => tile.Kind == TileKind.Teleport).ToList();

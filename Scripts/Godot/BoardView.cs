@@ -41,9 +41,14 @@ public partial class BoardView : Control
             if (highlights.Danger.Contains(tile.Position)) color = color.Lerp(new Color("743D36"), 0.35f);
             if (highlights.Reachable.Contains(tile.Position)) color = new Color("278794");
             if (highlights.Targets.Contains(tile.Position)) color = new Color("B65E52");
+            if (highlights.Cover.Contains(tile.Position)) color = color.Lerp(new Color("6D775D"), 0.28f);
+            if (highlights.FlankAnchors.Contains(tile.Position)) color = new Color("9A63A8");
             if (highlights.Selected == tile.Position) color = new Color("56D6E6");
             DrawRect(rectangle, color, true);
             DrawRect(rectangle, new Color("7C8C85", 0.42f), false, 1.25f);
+            if (highlights.SuggestedRoute.Contains(tile.Position)) DrawCircle(rectangle.GetCenter(), 4f, new Color("F0D87A"));
+            if (tile.CoverValue > 0) DrawRect(rectangle.Grow(-8f), new Color("D4BF7E", 0.55f), false, 1.1f);
+            if (tile.IsHighGround) DrawString(ThemeDB.FallbackFont, rectangle.Position + new Vector2(6, 15), "⌃", HorizontalAlignment.Left, -1, 14, new Color("E8DEC4"));
             var marker = tile.Kind switch { TileKind.Healing => "+", TileKind.Hazard => "!", TileKind.Teleport => "◇", TileKind.Difficult => "≈", TileKind.Destructible => "×", TileKind.Wall => "█", _ => string.Empty };
             if (!string.IsNullOrEmpty(marker)) DrawString(ThemeDB.FallbackFont, rectangle.Position + new Vector2(23, 37), marker, HorizontalAlignment.Left, -1, 20, new Color("E9E0C9"));
         }

@@ -40,7 +40,7 @@ public sealed class PlayerProfile
     public int PlayerLevel { get; set; } = 1;
     public int Shards { get; set; }
     public List<string> CampaignCleared { get; set; } = [];
-    public List<string> UnlockedHeroes { get; set; } = ["vanguard", "runemage", "ranger"];
+    public List<string> UnlockedHeroes { get; set; } = ["vanguard", "runemage", "ranger", "guardian", "duelist", "runesmith", "seer", "skywarden"];
     public List<string> Relics { get; set; } = [];
     public Dictionary<string, int> AchievementProgress { get; set; } = new();
     public List<string> UnlockedAchievements { get; set; } = [];

@@ -15,7 +15,10 @@
     "ultimate": "Cinder Rush",
     "abilityIds": ["shield_bash"],
     "aiProfile": "aggressive",
-    "color": "#B96B48"
+    "color": "#B96B48",
+    "mobility": "Skirmisher",
+    "roleTags": ["aggressor"],
+    "tacticalClass": "Duelist"
   },
   {
     "id": "frost_wisp",
@@ -33,7 +36,10 @@
     "ultimate": "Whiteout",
     "abilityIds": ["frost_lance"],
     "aiProfile": "controller",
-    "color": "#9FD6E5"
+    "color": "#9FD6E5",
+    "mobility": "Phasewalker",
+    "roleTags": ["control"],
+    "tacticalClass": "Support"
   },
   {
     "id": "void_scout",
@@ -51,7 +57,10 @@
     "ultimate": "Null Step",
     "abilityIds": ["void_pulse"],
     "aiProfile": "ambusher",
-    "color": "#65748C"
+    "color": "#65748C",
+    "mobility": "Phasewalker",
+    "roleTags": ["flanker"],
+    "tacticalClass": "Stalker"
   },
   {
     "id": "stone_brute",
@@ -69,7 +78,10 @@
     "ultimate": "Fault Line",
     "abilityIds": ["stone_slam", "root_bind"],
     "aiProfile": "boss",
-    "color": "#8A7961"
+    "color": "#8A7961",
+    "mobility": "Juggernaut",
+    "roleTags": ["boss", "sentinel"],
+    "tacticalClass": "Sentinel"
   },
   {
     "id": "thorn_caster",
@@ -87,6 +99,93 @@
     "ultimate": "Overgrowth",
     "abilityIds": ["root_bind"],
     "aiProfile": "support",
-    "color": "#718D4D"
+    "color": "#718D4D",
+    "mobility": "Standard",
+    "roleTags": ["support"],
+    "tacticalClass": "Support"
+  },
+  {
+    "id": "iron_sentinel",
+    "name": "Iron Sentinel",
+    "title": "Bulwark",
+    "faction": "Enemy",
+    "archetype": "Sentinel",
+    "maxHealth": 20,
+    "attack": 4,
+    "defense": 4,
+    "movement": 3,
+    "energy": 3,
+    "element": "None",
+    "passive": "Fixed Point",
+    "ultimate": "Gate Lock",
+    "abilityIds": ["stone_slam", "bulwark"],
+    "aiProfile": "sentinel",
+    "color": "#A09A89",
+    "mobility": "Juggernaut",
+    "roleTags": ["cover", "frontline"],
+    "tacticalClass": "Sentinel"
+  },
+  {
+    "id": "gale_harrier",
+    "name": "Gale Harrier",
+    "title": "Raider",
+    "faction": "Enemy",
+    "archetype": "Harrier",
+    "maxHealth": 12,
+    "attack": 4,
+    "defense": 1,
+    "movement": 6,
+    "energy": 3,
+    "element": "Storm",
+    "passive": "Crosswind",
+    "ultimate": "Shear Dive",
+    "abilityIds": ["gust_stride", "pinning_shot"],
+    "aiProfile": "ambusher",
+    "color": "#78B9D1",
+    "mobility": "Winged",
+    "roleTags": ["aerial", "flanker"],
+    "tacticalClass": "Harrier"
+  },
+  {
+    "id": "cinder_artillery",
+    "name": "Cinder Artillery",
+    "title": "Bombardier",
+    "faction": "Enemy",
+    "archetype": "Artillery",
+    "maxHealth": 13,
+    "attack": 4,
+    "defense": 0,
+    "movement": 3,
+    "energy": 4,
+    "element": "Fire",
+    "passive": "Rangefinder",
+    "ultimate": "Ashfall",
+    "abilityIds": ["ember_arc", "void_pulse"],
+    "aiProfile": "artillery",
+    "color": "#CA7751",
+    "mobility": "Standard",
+    "roleTags": ["artillery"],
+    "tacticalClass": "Artillery"
+  },
+  {
+    "id": "shade_stalker",
+    "name": "Shade Stalker",
+    "title": "Infiltrator",
+    "faction": "Enemy",
+    "archetype": "Stalker",
+    "maxHealth": 11,
+    "attack": 5,
+    "defense": 1,
+    "movement": 5,
+    "energy": 3,
+    "element": "Void",
+    "passive": "Thin Place",
+    "ultimate": "Null Corridor",
+    "abilityIds": ["void_pulse", "riposte"],
+    "aiProfile": "ambusher",
+    "color": "#7B6C9B",
+    "mobility": "Phasewalker",
+    "roleTags": ["flanker", "infiltrator"],
+    "tacticalClass": "Stalker"
   }
 ]

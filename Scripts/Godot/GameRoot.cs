@@ -158,6 +158,9 @@ public partial class GameRoot : Node
                 button.Disabled = selected.Acted || selected.Energy < ability.EnergyCost || selected.Cooldowns.GetValueOrDefault(abilityId) > 0 || session.Phase != GamePhase.Player;
                 command.AddChild(button);
             }
+            var reserve = MakeButton("RESERVE ROUTE", session.ReserveSuggestedRoute);
+            reserve.Disabled = session.Phase != GamePhase.Player || selected.Moved || session.GetHighlights().SuggestedRoute.Count == 0;
+            command.AddChild(reserve);
         }
         var undo = MakeButton("UNDO", session.Undo); undo.Disabled = !session.CanUndo; command.AddChild(undo);
         var end = MakeButton("END TURN →", session.EndTurn, primary: true); end.Disabled = session.Phase != GamePhase.Player; command.AddChild(end);

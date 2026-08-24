@@ -14,7 +14,10 @@
     "passive": "Stand Firm: gain 1 ward when ending beside a foe.",
     "ultimate": "Aegis Break",
     "abilityIds": ["shield_bash", "bulwark"],
-    "color": "#C99245"
+    "color": "#C99245",
+    "mobility": "Standard",
+    "roleTags": ["frontline"],
+    "tacticalClass": "Vanguard"
   },
   {
     "id": "runemage",
@@ -31,7 +34,10 @@
     "passive": "Etched Memory: the first spell each turn gains +1 power.",
     "ultimate": "Starfall Script",
     "abilityIds": ["ember_arc", "rune_mend"],
-    "color": "#56D6E6"
+    "color": "#56D6E6",
+    "mobility": "Standard",
+    "roleTags": ["caster"],
+    "tacticalClass": "Channeler"
   },
   {
     "id": "ranger",
@@ -48,7 +54,10 @@
     "passive": "Trailwise: difficult terrain costs 1 movement.",
     "ultimate": "Horizon Volley",
     "abilityIds": ["pinning_shot", "field_step"],
-    "color": "#7FA65B"
+    "color": "#7FA65B",
+    "mobility": "Trailblazer",
+    "roleTags": ["scout"],
+    "tacticalClass": "Pathfinder"
   },
   {
     "id": "guardian",
@@ -65,6 +74,89 @@
     "passive": "Anchor: nearby allies gain 1 defense.",
     "ultimate": "Winter Bastion",
     "abilityIds": ["frost_lance", "bulwark"],
-    "color": "#A9DCE7"
+    "color": "#A9DCE7",
+    "mobility": "Juggernaut",
+    "roleTags": ["sentinel"],
+    "tacticalClass": "Warden"
+  },
+  {
+    "id": "duelist",
+    "name": "Sable",
+    "title": "Duelist",
+    "faction": "Hero",
+    "archetype": "Flanker",
+    "maxHealth": 16,
+    "attack": 5,
+    "defense": 1,
+    "movement": 5,
+    "energy": 3,
+    "element": "Storm",
+    "passive": "Duelist's Edge: close ripostes gain an extra point of impact.",
+    "ultimate": "Last Meridian",
+    "abilityIds": ["riposte", "gust_stride"],
+    "color": "#E2A96D",
+    "mobility": "Skirmisher",
+    "roleTags": ["flanker", "duelist"],
+    "tacticalClass": "Duelist"
+  },
+  {
+    "id": "runesmith",
+    "name": "Tarin",
+    "title": "Runesmith",
+    "faction": "Hero",
+    "archetype": "Support Engineer",
+    "maxHealth": 18,
+    "attack": 3,
+    "defense": 2,
+    "movement": 3,
+    "energy": 4,
+    "element": "Arcane",
+    "passive": "Harmonic Seal: healing runes restore an extra point of health.",
+    "ultimate": "Bastion Script",
+    "abilityIds": ["bastion_seal", "ward_chorus"],
+    "color": "#D2B7F2",
+    "mobility": "Standard",
+    "roleTags": ["support", "sentinel"],
+    "tacticalClass": "Runesmith"
+  },
+  {
+    "id": "seer",
+    "name": "Nemi",
+    "title": "Far Seer",
+    "faction": "Hero",
+    "archetype": "Artillery",
+    "maxHealth": 13,
+    "attack": 4,
+    "defense": 0,
+    "movement": 4,
+    "energy": 4,
+    "element": "Void",
+    "passive": "Arcane Cartography: arcane attacks gain an extra point of impact.",
+    "ultimate": "Eclipse Index",
+    "abilityIds": ["eclipse_mark", "arc_tether"],
+    "color": "#9B9EDB",
+    "mobility": "Standard",
+    "roleTags": ["artillery", "seer"],
+    "tacticalClass": "Seer"
+  },
+  {
+    "id": "skywarden",
+    "name": "Aster",
+    "title": "Skywarden",
+    "faction": "Hero",
+    "archetype": "Aerial Scout",
+    "maxHealth": 15,
+    "attack": 4,
+    "defense": 1,
+    "movement": 6,
+    "energy": 3,
+    "element": "Storm",
+    "passive": "Overflight: difficult terrain and hazard routes cost one movement.",
+    "ultimate": "Atlas Dive",
+    "abilityIds": ["gust_stride", "pinning_shot"],
+    "color": "#7CCEE7",
+    "mobility": "Winged",
+    "roleTags": ["scout", "aerial"],
+    "tacticalClass": "Skywarden"
   }
 ]

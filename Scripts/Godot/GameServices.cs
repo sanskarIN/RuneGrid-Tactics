@@ -19,6 +19,8 @@ public partial class GameServices : Node
         Saves = new LocalSaveRepository();
         SaveData = Saves.Load();
         Progression = new ProgressionService(SaveData.Profile);
+        Progression.EnsureNativeRoster();
+        Persist();
     }
 
     public GameSession StartEncounter(GameMode mode, string seed)
@@ -42,6 +44,7 @@ public partial class GameServices : Node
     {
         SaveData = imported;
         Progression = new ProgressionService(SaveData.Profile);
+        Progression.EnsureNativeRoster();
         Persist();
     }
 
