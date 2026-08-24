@@ -138,6 +138,7 @@ public sealed class GameSession
         _undoSnapshot = null;
         _enemyPhaseFinished = false;
         Phase = GamePhase.Enemy;
+        RecordSystem("end-turn", null, "Player field turn closed.");
         LogMessage("Field turn closed. Hostiles read the board.");
         StateChanged?.Invoke();
         return true;
@@ -396,6 +397,7 @@ public sealed class GameSession
 
     private void CaptureUndo() => _undoSnapshot ??= Encounter.Units.Select(CloneUnit).ToList();
     private void Record(UnitState unit, string type, GridPoint? target, string? abilityId, string note) => _actions.Add(new TacticalAction(Turn, unit.Id, type, target, abilityId, note));
+    private void RecordSystem(string type, GridPoint? target, string note) => _actions.Add(new TacticalAction(Turn, "system", type, target, null, note));
     private void LogMessage(string message) { _log.Insert(0, message); if (_log.Count > 5) _log.RemoveAt(_log.Count - 1); MessageLogged?.Invoke(message); }
 
     private static UnitState CloneUnit(UnitState source)
