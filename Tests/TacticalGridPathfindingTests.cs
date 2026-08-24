@@ -450,6 +450,53 @@ public sealed class TacticalGridPathfindingTests
         Assert.False(ReplayInspectorShortcutMap.TryParse("Escape", hasModifier: false, out _));
     }
 
+    [Fact]
+    public void ReplayInspectorKeyBindings_PersistCustomAssignmentsAndRouteDeterministically()
+    {
+        var bindings = ReplayInspectorKeyBindings.CreateDefault();
+
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.Previous, "A", out _));
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.Next, "D", out _));
+        var saved = JsonSerializer.Serialize(bindings);
+        var restored = JsonSerializer.Deserialize<ReplayInspectorKeyBindings>(saved);
+
+        Assert.NotNull(restored);
+        restored!.Normalize();
+        Assert.Equal("A", restored.Get(ReplayInspectorShortcut.Previous));
+        Assert.Equal("D", restored.Get(ReplayInspectorShortcut.Next));
+        Assert.True(restored.TryResolve("a", hasModifier: false, out var previous));
+        Assert.Equal(ReplayInspectorShortcut.Previous, previous);
+        Assert.True(restored.TryResolve("D", hasModifier: false, out var next));
+        Assert.Equal(ReplayInspectorShortcut.Next, next);
+        Assert.False(restored.TryResolve("Space", hasModifier: false, out _));
+        Assert.False(restored.TryResolve("A", hasModifier: true, out _));
+    }
+
+    [Fact]
+    public void ReplayInspectorKeyBindings_RejectConflictsAndRepairsMalformedImportedValues()
+    {
+        var bindings = ReplayInspectorKeyBindings.CreateDefault();
+
+        Assert.True(bindings.TryAssign(ReplayInspectorShortcut.Previous, "A", out _));
+        Assert.False(bindings.TryAssign(ReplayInspectorShortcut.End, "A", out var duplicateError));
+        Assert.Contains("Previous", duplicateError);
+        Assert.False(bindings.TryAssign(ReplayInspectorShortcut.Start, "Space", out var aliasError));
+        Assert.Contains("alternate", aliasError);
+        Assert.False(bindings.TryAssign(ReplayInspectorShortcut.Start, "Escape", out var unsupportedError));
+        Assert.Contains("Choose a letter", unsupportedError);
+
+        var malformed = new ReplayInspectorKeyBindings { Previous = "A", Next = "A", Start = "Escape", End = "", PlayToEnd = "P" };
+        malformed.Normalize();
+
+        var normalized = Enum.GetValues<ReplayInspectorShortcut>().Select(malformed.Get).ToList();
+        Assert.Equal(normalized.Count, normalized.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.All(normalized, key => Assert.True(ReplayInspectorKeyBindings.TryNormalizeKey(key, out _)));
+        malformed.RestoreDefaults();
+        Assert.Equal("Left", malformed.Get(ReplayInspectorShortcut.Previous));
+        Assert.True(malformed.TryResolve("Space", hasModifier: false, out var defaultNext));
+        Assert.Equal(ReplayInspectorShortcut.Next, defaultNext);
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
