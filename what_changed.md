@@ -141,3 +141,15 @@
 | Core contract | Added a framework-independent reference builder in fixed replay-command order so active local bindings can be tested independently of Godot rendering. |
 | Verification | Added deterministic reference ordering and custom-binding coverage; native validation now requires the overlay builder, F1 route, command trigger, and close behavior. Godot C# Release builds with zero warnings/errors and the native suite passes **31 tests, 0 failures**. |
 | GitHub | Pushed four focused overlay, test, validation, and documentation commits ending at `d462261`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.9-replay-onboarding — First-time replay inspector introduction
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Local state | Added a persistent `ReplayInspectorOnboarding` record to local accessibility settings. Existing and imported records receive a safe not-yet-seen default. |
+| First-use tooltip | The first opened replay displays **INTRODUCING REPLAY INSPECTOR**, explaining deterministic state reconstruction and how to access active controls through **VIEW SHORTCUTS** or **F1**. |
+| Dismissal | **GOT IT** and **VIEW SHORTCUTS** both persist acknowledgement. The former returns directly to inspection; the latter opens the existing active-binding reference overlay. |
+| Verification | Added framework-independent serialized onboarding lifecycle coverage; native validation now requires the state contract, tooltip, acknowledgement, and shortcut-reference entry route. Godot C# Release builds with zero warnings/errors and the native suite passes **32 tests, 0 failures**. |
+| GitHub | Pushed four focused onboarding, test, validation, and documentation commits ending at `73ae81a`, with repository-local author address `sanskarin@outlook.in`. |

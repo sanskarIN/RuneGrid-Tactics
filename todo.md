@@ -36,3 +36,6 @@
 - [x] Add an in-inspector active-binding reference overlay with clear open and dismiss behavior.
 - [x] Provide command-table and keyboard overlay access without interfering with configured replay navigation.
 - [x] Add overlay validation, tests, documentation, and GitHub synchronization for the native update.
+- [x] Add a persistent first-time replay inspector onboarding state with safe migration behavior.
+- [x] Add a clear dismissible inspector tooltip introducing inspection and the shortcut reference.
+- [x] Add onboarding validation, tests, documentation, and GitHub synchronization for the native update.
