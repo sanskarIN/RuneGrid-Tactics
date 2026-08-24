@@ -31,7 +31,7 @@
 | Validation        | Re-ran the complete formatting, test, type-check, production-build, desktop screenshot, and mobile screenshot sequence after the refinement.                                                                                             |
 | Known limitations | The Babylon production bundle is approximately 1.59 MB before gzip and emits a standard chunk-size advisory; it remains buildable and is a candidate for future code-splitting work.                                                     |
 
-## v0.2.0-godot — Native C# migration in progress
+## v0.2.0-godot — Native C# source migration
 
 **Date:** 2026-08-24
 
@@ -43,4 +43,6 @@
 | Native UI           | Added functional menu, all eleven mode starts, battle HUD, grid tapping, hero/ability command controls, pause, codex, roster, local statistics, replay listing, settings, and export/import control paths.                                                                                 |
 | Executables         | Added committed desktop/Android export presets, Bash and PowerShell release scripts, Godot C# CI source validation, and `godot/BUILD_EXECUTABLES.md` with platform-specific toolchain, export, signing, and verification guidance.                                                         |
 | Documentation       | Added `godot/README.md` and `GODOT_MIGRATION.md`; updated the root README and changelog to describe the dual browser/native repository layout.                                                                                                                                             |
+| Validation          | Ran the committed native structure and JSON validation script successfully for all six JSON content files and confirmed no whitespace errors with `git diff --check`. GitHub Actions now restores and builds the C# project on every relevant push or pull request.                        |
+| GitHub history      | Pushed six focused migration commits, ending at `a21d249`, using the repository-local author address `sanskarin@outlook.in`.                                                                                                                                                               |
 | Known limitation    | The current sandbox has no Godot .NET editor or .NET SDK. Native source and export configuration are prepared, but executable compilation and on-device verification must run on a provisioned machine or CI with the required official toolchain.                                         |

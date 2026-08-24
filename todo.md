@@ -9,4 +9,4 @@
 - [x] Write complete Godot export presets and platform-specific executable build instructions for Windows, Linux, Android, and macOS.
 - [x] Add CI-ready validation and release packaging guidance that distinguishes source verification from native Godot export verification.
 - [ ] Run the Godot .NET editor import, C# compilation, native export, and on-device smoke test on a machine with the required Godot/.NET toolchain.
-- [ ] Commit and push the native migration after source-format and JSON validation complete.
+- [x] Commit and push the native migration after source-format and JSON validation complete.
