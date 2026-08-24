@@ -306,6 +306,74 @@ public sealed class TacticalGridPathfindingTests
         Assert.Contains($"action[{expected.Actions.Count}]: expected [<none>], actual [turn=9; actor=system; type=unexpected; target=none; ability=none]", message);
     }
 
+    [Fact]
+    public void ReplayInspector_ReportsMatchingSeededInitialStateAndReadableTimeline()
+    {
+        var record = RecordOneRound("inspector-initial");
+        var inspector = new ReplayInspector(record, BuildEncounter, NoAbilities);
+
+        var report = inspector.BuildReport();
+        var rows = inspector.ActionRows();
+
+        Assert.True(report.DeterminismDifference.IsMatch);
+        Assert.True(report.DifferenceFromInitial.IsMatch);
+        Assert.Equal(0, report.CurrentActionIndex);
+        Assert.Equal(record.Actions.Count, report.ActionCount);
+        Assert.NotNull(report.NextAction);
+        Assert.True(rows[0].IsCurrent);
+        Assert.Contains("hero-scout", rows[0].Label);
+    }
+
+    [Fact]
+    public void ReplayInspector_StepVisualizesStateDeltaWhilePreservingDeterminism()
+    {
+        var inspector = new ReplayInspector(RecordOneRound("inspector-step"), BuildEncounter, NoAbilities);
+
+        Assert.True(inspector.Step());
+        var report = inspector.BuildReport();
+        var rows = inspector.ActionRows();
+
+        Assert.True(report.DeterminismDifference.IsMatch, report.DeterminismDifference.ToHumanReadable());
+        Assert.False(report.DifferenceFromInitial.IsMatch);
+        Assert.Equal(1, report.CurrentActionIndex);
+        Assert.True(rows[0].IsResolved);
+        Assert.True(rows[1].IsCurrent);
+        Assert.Contains("unit hero-scout", report.DifferenceFromInitial.ToHumanReadable());
+    }
+
+    [Fact]
+    public void ReplayInspector_PlayToEndAndResetMaintainInspectableDeterministicState()
+    {
+        var record = RecordOneRound("inspector-end");
+        var inspector = new ReplayInspector(record, BuildEncounter, NoAbilities);
+
+        Assert.Equal(record.Actions.Count, inspector.StepToEnd());
+        var completed = inspector.BuildReport();
+        Assert.True(completed.IsComplete);
+        Assert.True(completed.DeterminismDifference.IsMatch, completed.DeterminismDifference.ToHumanReadable());
+
+        inspector.Reset();
+        var reset = inspector.BuildReport();
+        Assert.Equal(0, reset.CurrentActionIndex);
+        Assert.True(reset.DifferenceFromInitial.IsMatch);
+        Assert.False(reset.IsInvalid);
+    }
+
+    [Fact]
+    public void ReplayInspector_ExposesInvalidReplayErrorForCommandTableRendering()
+    {
+        var record = new ReplayRecord(1, "inspector-invalid", "inspector-invalid", GameMode.Training, Difficulty.Field, DateTimeOffset.UnixEpoch,
+            [new TacticalAction(1, "enemy-scout", "enemy", new GridPoint(2, 0), null, "invalid early enemy")], null);
+        var inspector = new ReplayInspector(record, BuildEncounter, NoAbilities);
+
+        Assert.False(inspector.Step());
+        var report = inspector.BuildReport();
+
+        Assert.True(report.IsInvalid);
+        Assert.Contains("expected an enemy phase", report.Error);
+        Assert.True(report.DeterminismDifference.IsMatch);
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
