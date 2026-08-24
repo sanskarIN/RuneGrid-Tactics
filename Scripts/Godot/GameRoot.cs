@@ -18,6 +18,7 @@ public partial class GameRoot : Node
     private ReplayInspectorShortcut? _bindingCapture;
     private string? _keyBindingNotice;
     private bool _showReplayShortcutOverlay;
+    private bool _showReplayInspectorOnboarding;
 
     public override void _Ready()
     {
@@ -300,6 +301,7 @@ public partial class GameRoot : Node
     {
         _showReplayShortcutOverlay = false;
         _replayInspector = _services.InspectReplay(replay);
+        _showReplayInspectorOnboarding = _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowIntro;
         _replayInspector.Changed += ShowReplayInspector;
         ShowReplayInspector();
     }
@@ -360,7 +362,35 @@ public partial class GameRoot : Node
         }
         root.AddChild(actions);
         _screen.AddChild(root);
+        if (_showReplayInspectorOnboarding) _screen.AddChild(BuildReplayInspectorOnboardingTooltip());
         if (_showReplayShortcutOverlay) _screen.AddChild(BuildReplayShortcutReferenceOverlay());
+    }
+
+    private Control BuildReplayInspectorOnboardingTooltip()
+    {
+        var tooltip = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Stop, TooltipText = "First-time replay inspector guidance." };
+        tooltip.SetAnchorsPreset(Control.LayoutPreset.BottomRight);
+        tooltip.Position = new Vector2(760, 430);
+        tooltip.Size = new Vector2(440, 250);
+        var style = new StyleBoxFlat { BgColor = new Color("173B3C"), BorderColor = _route, ContentMarginLeft = 18, ContentMarginRight = 18, ContentMarginTop = 16, ContentMarginBottom = 16 };
+        style.SetBorderWidthAll(2); tooltip.AddThemeStyleboxOverride("panel", style);
+        var content = MakeColumn(8); tooltip.AddChild(content);
+        content.AddChild(MakeLabel("INTRODUCING REPLAY INSPECTOR", 19, _route));
+        content.AddChild(MakeLabel("Inspect this seeded match one authoritative action at a time. The timeline, action rows, and controls always rebuild the exact recorded state.", 14, _parchment, wrap: true));
+        content.AddChild(MakeLabel("Need the active controls? Select VIEW SHORTCUTS or press F1 for the shortcut reference.", 13, new Color("D4BF7E"), wrap: true));
+        var actions = new HBoxContainer(); actions.AddThemeConstantOverride("separation", 8);
+        actions.AddChild(MakeButton("VIEW SHORTCUTS", () => { _showReplayInspectorOnboarding = false; _services.SaveData.Accessibility.ReplayInspectorOnboarding.DismissIntro(); _services.Persist(); _showReplayShortcutOverlay = true; ShowReplayInspector(); }));
+        actions.AddChild(MakeButton("GOT IT", DismissReplayInspectorOnboarding, primary: true));
+        content.AddChild(actions);
+        return tooltip;
+    }
+
+    private void DismissReplayInspectorOnboarding()
+    {
+        _showReplayInspectorOnboarding = false;
+        _services.SaveData.Accessibility.ReplayInspectorOnboarding.DismissIntro();
+        _services.Persist();
+        ShowReplayInspector();
     }
 
     private Control BuildReplayShortcutReferenceOverlay()

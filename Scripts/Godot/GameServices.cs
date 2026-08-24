@@ -20,6 +20,7 @@ public partial class GameServices : Node
         SaveData = Saves.Load();
         SaveData.Accessibility.ReplayKeyBindings ??= ReplayInspectorKeyBindings.CreateDefault();
         SaveData.Accessibility.ReplayKeyBindings.Normalize();
+        SaveData.Accessibility.ReplayInspectorOnboarding ??= new ReplayInspectorOnboarding();
         Progression = new ProgressionService(SaveData.Profile);
         Progression.EnsureNativeRoster();
         Persist();
@@ -49,6 +50,7 @@ public partial class GameServices : Node
         SaveData = imported;
         SaveData.Accessibility.ReplayKeyBindings ??= ReplayInspectorKeyBindings.CreateDefault();
         SaveData.Accessibility.ReplayKeyBindings.Normalize();
+        SaveData.Accessibility.ReplayInspectorOnboarding ??= new ReplayInspectorOnboarding();
         Progression = new ProgressionService(SaveData.Profile);
         Progression.EnsureNativeRoster();
         Persist();
