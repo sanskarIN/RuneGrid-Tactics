@@ -20,4 +20,4 @@
 - [x] Run the native build and complete suite, validate replay metadata, then commit and push replay determinism coverage.
 - [x] Add canonical replay state snapshots and a stable human-readable diff generator.
 - [x] Use replay diffs in deterministic replay test failures and cover unit, tile, phase, and action divergence scenarios.
-- [ ] Validate, document, commit, and push replay mismatch diagnostics.
+- [x] Validate, document, commit, and push replay mismatch diagnostics.

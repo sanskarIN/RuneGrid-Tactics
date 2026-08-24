@@ -72,3 +72,5 @@
 | Fingerprints | Refactored `ReplayFingerprint` to use the shared canonical snapshot rather than duplicating serialization rules. |
 | Test ergonomics | Saved-replay equivalence now attaches a human-readable state diff to the assertion message; dedicated tests cover exact match, phase mismatch, and combined entity/action mismatch output. |
 | Native validation | The repository validator now requires the snapshot/diff contracts and their diagnostic test scenarios. |
+| Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **20 passed, 0 failed**. |
+| GitHub | Pushed four focused replay diff engine, test, validation, and documentation commits, ending at `156ef89`, with repository-local author address `sanskarin@outlook.in`. |
