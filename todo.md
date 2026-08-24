@@ -14,4 +14,4 @@
 - [x] Integrate new tactical metadata into native encounters and board highlights, validate, commit, and push the expansion.
 - [x] Add a Godot .NET pathfinding test project with deterministic grid scenarios.
 - [x] Cover mobility, weighted safety, reservations, legal approach, flank, phasewalking, and route diagnostics with unit tests.
-- [ ] Commit and push the validated Godot .NET pathfinding test suite to GitHub.
+- [x] Commit and push the validated Godot .NET pathfinding test suite to GitHub.
