@@ -17,3 +17,17 @@
 | Validation | Native structure and six JSON files validate successfully via `node Tools/validate-project.mjs .`; whitespace validation also passes. |
 | GitHub | Pushed the complete native-only conversion in commit `06a0e4a` using the repository-local author address `sanskarin@outlook.in`. |
 | Remaining release gate | Use a machine with Godot 4 .NET and the matching .NET SDK to import the project, compile C#, create platform packages, and run desktop/mobile smoke tests. |
+
+## v0.3.0-tactics — Tactical classes and advanced navigation
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Hero classes | Added Duelist, Runesmith, Seer, and Skywarden heroes with distinct combat posture, mobility, JSON class metadata, and authored skills. |
+| Enemy classes | Added Iron Sentinel, Gale Harrier, Cinder Artillery, and Shade Stalker roles and included them in deterministic encounter pools. |
+| Navigation | Added mobility-specific movement costs, threat and hazard weighting, cover rewards, reservations, tactical route diagnostics, legal approach routing, and flank-anchor analysis. |
+| Turn integration | Hero movement uses tactical routes; enemy movement now resolves legal approach tiles and uses safe or flanking intent according to role. |
+| Native UI | Added cover, high-ground, flank-anchor, and suggested-route visuals to the board plus a `RESERVE ROUTE` command. |
+| Roster persistence | Existing and new local profiles receive the expanded native hero roster through a progression migration helper. |
+| Validation | The repository validator now checks expanded units, class metadata, ability links, route APIs, export presets, and JSON content. |

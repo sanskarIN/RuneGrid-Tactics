@@ -25,6 +25,12 @@ RuneGrid Tactics is an original, offline-first tactical roguelite built exclusiv
 | `Tools/` | Release export scripts and native project validator. |
 | `export_presets.cfg` | Version-controlled non-secret Windows, Linux, and Android export presets. |
 
+## Tactical roster and routecraft
+
+The field roster now spans **Vanguard, Channeler, Pathfinder, Warden, Duelist, Runesmith, Seer, and Skywarden** hero classes, supported by Sentinel, Harrier, Stalker, and Artillery enemy roles. Each unit declares a tactical class, mobility profile, role tags, and JSON-authored ability list.
+
+The C# grid engine supports weighted movement, mobility-specific terrain treatment, cover and high-ground analysis, threat-weighted safe routes, squad reservations, nearest legal approaches to occupied targets, flank-anchor discovery, and recommended-route highlights. The command bar can reserve the selected hero’s suggested route so the squad plan remains legible before movement is committed.
+
 ## Start development
 
 Install the **.NET-enabled Godot 4.5 editor** and a compatible 64-bit .NET SDK. Open [`project.godot`](project.godot), build the C# project in the editor, and press **F5**. See [BUILD_EXECUTABLES.md](BUILD_EXECUTABLES.md) for complete Windows, Linux, macOS, and Android executable guidance, and [STRUCTURE.md](STRUCTURE.md) for the architecture.
