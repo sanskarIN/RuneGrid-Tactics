@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(process.argv[2] ?? new URL("..", import.meta.url).pathname);
 const jsonFiles = ["heroes.json", "enemies.json", "abilities.json", "items.json", "levels.json", "balance.json"];
-const required = ["project.godot", "RuneGrid.Tactics.csproj", "Scenes/Main.tscn", "Scripts/Godot/GameRoot.cs", "Scripts/Core/GameSession.cs", "Scripts/Core/ReplayPlayer.cs", "Scripts/Core/ReplayFingerprint.cs", "export_presets.cfg", "Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj", "Tests/TacticalGridPathfindingTests.cs"];
+const required = ["project.godot", "RuneGrid.Tactics.csproj", "Scenes/Main.tscn", "Scripts/Godot/GameRoot.cs", "Scripts/Core/GameSession.cs", "Scripts/Core/ReplayPlayer.cs", "Scripts/Core/ReplayFingerprint.cs", "Scripts/Core/ReplayStateDiff.cs", "export_presets.cfg", "Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj", "Tests/TacticalGridPathfindingTests.cs"];
 
 for (const relative of required) {
   await stat(join(root, relative));
@@ -44,10 +44,14 @@ const fingerprintSource = await readFile(join(root, "Scripts", "Core", "ReplayFi
 for (const contract of ["LastError", "SameAction", "ReplayEnemyAction", "CreateSession"]) {
   if (!replaySource.includes(contract)) throw new Error(`Missing replay determinism contract: ${contract}`);
 }
-if (!fingerprintSource.includes("DeterministicRandom.Hash")) throw new Error("Replay fingerprint is not deterministic.");
+const diffSource = await readFile(join(root, "Scripts", "Core", "ReplayStateDiff.cs"), "utf8");
+for (const contract of ["ReplayStateSnapshot", "ReplayStateDiffGenerator", "ToHumanReadable", "CompareActions", "DeterministicRandom.Hash"]) {
+  if (!diffSource.includes(contract)) throw new Error(`Missing replay diff contract: ${contract}`);
+}
+if (!fingerprintSource.includes("ReplayStateSnapshot.Capture")) throw new Error("Replay fingerprint does not use the canonical snapshot.");
 
 const testSource = await readFile(join(root, "Tests", "TacticalGridPathfindingTests.cs"), "utf8");
-const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics", "SavedReplay_RoundTripsAndReproducesCanonicalFinalFingerprint", "ReplayPlayback_IsRepeatableAcrossIndependentSavedEncounterInstances", "ReplayReset_RestoresTheExactSeededInitialFingerprint", "ReplayRejectsOutOfOrderEnemyActionWithoutAdvancingPlayback", "ReplayFingerprint_ChangesWhenSavedEncounterSeedChanges"];
+const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics", "SavedReplay_RoundTripsAndReproducesCanonicalFinalFingerprint", "ReplayPlayback_IsRepeatableAcrossIndependentSavedEncounterInstances", "ReplayReset_RestoresTheExactSeededInitialFingerprint", "ReplayRejectsOutOfOrderEnemyActionWithoutAdvancingPlayback", "ReplayFingerprint_ChangesWhenSavedEncounterSeedChanges", "ReplayDiff_ReportsExactMatchForEquivalentCanonicalSnapshots", "ReplayDiff_ReportsPhaseDivergenceInStableHumanReadableText", "ReplayDiff_ReportsTileUnitAndActionDivergences"];
 for (const scenario of requiredScenarios) {
   if (!testSource.includes(scenario)) throw new Error(`Missing pathfinding test scenario: ${scenario}`);
 }
@@ -57,4 +61,4 @@ for (const target of ["Windows Desktop", "Linux/X11", "Android"]) {
   if (!presets.includes(`name="${target}"`)) throw new Error(`Missing export preset: ${target}`);
 }
 
-console.log(`Godot project structure, ${jsonFiles.length} JSON content files, expanded unit classes, advanced routing, and replay determinism coverage validated.`);
+console.log(`Godot project structure, ${jsonFiles.length} JSON content files, advanced routing, replay determinism, and human-readable mismatch diagnostics validated.`);
