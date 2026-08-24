@@ -31,3 +31,4 @@
 | Native UI | Added cover, high-ground, flank-anchor, and suggested-route visuals to the board plus a `RESERVE ROUTE` command. |
 | Roster persistence | Existing and new local profiles receive the expanded native hero roster through a progression migration helper. |
 | Validation | The repository validator now checks expanded units, class metadata, ability links, route APIs, export presets, and JSON content. |
+| GitHub | Pushed four focused commits for navigation, roster roles, validation, and documentation, ending at `70a9294`, with repository-local author address `sanskarin@outlook.in`. |

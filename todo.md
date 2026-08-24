@@ -11,4 +11,4 @@
 - [ ] Restart and verify the managed preview service after the native-project conversion.
 - [x] Add new JSON-driven tactical unit classes, abilities, and enemy role coverage.
 - [x] Add advanced C# routefinding features for terrain profiles, tactical reservations, flank routes, and route analysis.
-- [ ] Integrate new tactical metadata into native encounters and board highlights, validate, commit, and push the expansion.
+- [x] Integrate new tactical metadata into native encounters and board highlights, validate, commit, and push the expansion.
