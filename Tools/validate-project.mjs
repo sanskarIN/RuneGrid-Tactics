@@ -51,15 +51,15 @@ for (const contract of ["ReplayStateSnapshot", "ReplayStateDiffGenerator", "ToHu
 if (!fingerprintSource.includes("ReplayStateSnapshot.Capture")) throw new Error("Replay fingerprint does not use the canonical snapshot.");
 const inspectorSource = await readFile(join(root, "Scripts", "Core", "ReplayInspector.cs"), "utf8");
 const uiSource = await readFile(join(root, "Scripts", "Godot", "GameRoot.cs"), "utf8");
-for (const contract of ["BuildReport", "StepToEnd", "ActionRows", "ReplayInspectorReport"]) {
+for (const contract of ["BuildReport", "StepToEnd", "StepBackward", "StepForward", "Seek", "ActionRows", "ReplayInspectorReport"]) {
   if (!inspectorSource.includes(contract)) throw new Error(`Missing replay inspector contract: ${contract}`);
 }
-for (const control of ["OpenReplayInspector", "ShowReplayInspector", "DETERMINISM AUDIT", "PLAY TO END", "RESET INSPECTION"]) {
+for (const control of ["OpenReplayInspector", "ShowReplayInspector", "DETERMINISM AUDIT", "PLAY TO END", "RESET INSPECTION", "TIMELINE", "PREVIOUS", "NEXT", "HSlider"]) {
   if (!uiSource.includes(control)) throw new Error(`Missing command-table replay inspector control: ${control}`);
 }
 
 const testSource = await readFile(join(root, "Tests", "TacticalGridPathfindingTests.cs"), "utf8");
-const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics", "SavedReplay_RoundTripsAndReproducesCanonicalFinalFingerprint", "ReplayPlayback_IsRepeatableAcrossIndependentSavedEncounterInstances", "ReplayReset_RestoresTheExactSeededInitialFingerprint", "ReplayRejectsOutOfOrderEnemyActionWithoutAdvancingPlayback", "ReplayFingerprint_ChangesWhenSavedEncounterSeedChanges", "ReplayDiff_ReportsExactMatchForEquivalentCanonicalSnapshots", "ReplayDiff_ReportsPhaseDivergenceInStableHumanReadableText", "ReplayDiff_ReportsTileUnitAndActionDivergences", "ReplayInspector_ReportsMatchingSeededInitialStateAndReadableTimeline", "ReplayInspector_StepVisualizesStateDeltaWhilePreservingDeterminism", "ReplayInspector_PlayToEndAndResetMaintainInspectableDeterministicState", "ReplayInspector_ExposesInvalidReplayErrorForCommandTableRendering"];
+const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics", "SavedReplay_RoundTripsAndReproducesCanonicalFinalFingerprint", "ReplayPlayback_IsRepeatableAcrossIndependentSavedEncounterInstances", "ReplayReset_RestoresTheExactSeededInitialFingerprint", "ReplayRejectsOutOfOrderEnemyActionWithoutAdvancingPlayback", "ReplayFingerprint_ChangesWhenSavedEncounterSeedChanges", "ReplayDiff_ReportsExactMatchForEquivalentCanonicalSnapshots", "ReplayDiff_ReportsPhaseDivergenceInStableHumanReadableText", "ReplayDiff_ReportsTileUnitAndActionDivergences", "ReplayInspector_ReportsMatchingSeededInitialStateAndReadableTimeline", "ReplayInspector_StepVisualizesStateDeltaWhilePreservingDeterminism", "ReplayInspector_PlayToEndAndResetMaintainInspectableDeterministicState", "ReplayInspector_ExposesInvalidReplayErrorForCommandTableRendering", "ReplayInspector_SeekRebuildsTheExactActionIndexState", "ReplayInspector_PreviousAndNextNavigateWithoutChangingCanonicalPlayback", "ReplayInspector_RejectsOutOfRangeScrubWithoutChangingVisibleState"];
 for (const scenario of requiredScenarios) {
   if (!testSource.includes(scenario)) throw new Error(`Missing pathfinding test scenario: ${scenario}`);
 }
@@ -69,4 +69,4 @@ for (const target of ["Windows Desktop", "Linux/X11", "Android"]) {
   if (!presets.includes(`name="${target}"`)) throw new Error(`Missing export preset: ${target}`);
 }
 
-console.log(`Godot project structure, ${jsonFiles.length} JSON content files, advanced routing, replay determinism, mismatch diagnostics, and command-table inspection validated.`);
+console.log(`Godot project structure, ${jsonFiles.length} JSON content files, advanced routing, replay determinism, diagnostics, inspection, and timeline scrubbing validated.`);
