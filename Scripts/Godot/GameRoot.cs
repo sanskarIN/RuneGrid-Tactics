@@ -158,12 +158,12 @@ public partial class GameRoot : Node
                 button.Disabled = selected.Acted || selected.Energy < ability.EnergyCost || selected.Cooldowns.GetValueOrDefault(abilityId) > 0 || session.Phase != GamePhase.Player;
                 command.AddChild(button);
             }
-            var reserve = MakeButton("RESERVE ROUTE", session.ReserveSuggestedRoute);
+            var reserve = MakeButton("RESERVE ROUTE", () => { session.ReserveSuggestedRoute(); });
             reserve.Disabled = session.Phase != GamePhase.Player || selected.Moved || session.GetHighlights().SuggestedRoute.Count == 0;
             command.AddChild(reserve);
         }
-        var undo = MakeButton("UNDO", session.Undo); undo.Disabled = !session.CanUndo; command.AddChild(undo);
-        var end = MakeButton("END TURN →", session.EndTurn, primary: true); end.Disabled = session.Phase != GamePhase.Player; command.AddChild(end);
+        var undo = MakeButton("UNDO", () => { session.Undo(); }); undo.Disabled = !session.CanUndo; command.AddChild(undo);
+        var end = MakeButton("END TURN →", () => { session.EndTurn(); }, primary: true); end.Disabled = session.Phase != GamePhase.Player; command.AddChild(end);
         root.AddChild(command);
 
         if (session.Phase is GamePhase.Victory or GamePhase.Defeat)
@@ -310,7 +310,7 @@ public partial class GameRoot : Node
         var style = new StyleBoxFlat { BgColor = primary ? _route : new Color("1D3839"), BorderColor = primary ? _route : new Color("5B7979"), ContentMarginLeft = 13, ContentMarginRight = 13, ContentMarginTop = 8, ContentMarginBottom = 8 };
         style.SetBorderWidthAll(1); button.AddThemeStyleboxOverride("normal", style); button.AddThemeColorOverride("font_color", primary ? _basalt : _parchment); return button;
     }
-    private CheckButton MakeToggle(string text, bool selected, Action<bool> changed) { var toggle = new CheckButton { Text = text, ButtonPressed = selected }; toggle.Toggled += changed; return toggle; }
+    private CheckButton MakeToggle(string text, bool selected, Action<bool> changed) { var toggle = new CheckButton { Text = text, ButtonPressed = selected }; toggle.Toggled += value => changed(value); return toggle; }
     private Control MakeHeader(string title, string subtitle, Action back) { var row = new HBoxContainer(); row.AddChild(MakeLabel(title, 25, _parchment, expand: true)); row.AddChild(MakeLabel(subtitle, 13, _route)); row.AddChild(MakeButton("COMMAND TABLE", back)); return row; }
     private static string ModeDescription(GameMode mode) => mode switch { GameMode.Campaign => "Story route through the fractured meridian.", GameMode.Expedition => "Seeded procedural encounter with local progression.", GameMode.Daily => "Shared date-marked deterministic field.", GameMode.Weekly => "A denser weekly anomaly patrol.", GameMode.Puzzle => "Win a compact field within six turns.", GameMode.Survival => "Hold the ridge through a hostile wave.", GameMode.BossRush => "Break the Stone Brute formation.", GameMode.Custom => "Generate a fresh personal field seed.", GameMode.Training => "Practice routes, targets, and turn timing.", GameMode.Tutorial => "A guided opening field for new players.", GameMode.Endless => "Continue to a new field after every victory.", _ => "Open a tactical field." };
 }
