@@ -41,6 +41,8 @@ Archived replay records can be reviewed through **REPLAYS → INSPECT** in the c
 
 Replay inspector commands are configurable from **SETTINGS & ACCESSIBILITY → REPLAY INSPECTOR KEYS**. Select a command, press one unmodified supported key, and the local record saves it immediately. Each command must remain unique. The settings panel accepts letters, arrows, **Space**, **Home**, **End**, **Page Up**, and **Page Down**; it rejects duplicate, unsupported, and modifier-key assignments, and offers **RESTORE DEFAULT REPLAY KEYS**.
 
+While viewing a replay, press **F1** or select **KEYS · F1** to open the in-game **SHORTCUT REFERENCE** overlay. It lists the player’s active saved bindings and explains each deterministic timeline action. The overlay safely pauses replay keyboard navigation until dismissed with **F1**, **Escape**, or **CLOSE REFERENCE**.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status

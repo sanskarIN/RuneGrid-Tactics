@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.8-replay-shortcut-reference] — 2026-08-24
+
+### Added
+
+Added an in-game **SHORTCUT REFERENCE** overlay to the replay inspector. **F1** and **KEYS · F1** open a modal list of the player’s active saved bindings, command descriptions, and explicit close instructions. **F1**, **Escape**, and **CLOSE REFERENCE** dismiss it without changing replay state.
+
+### Validation
+
+Added deterministic active-binding reference coverage and native validation requirements for the overlay builder, F1 route, command-table trigger, and close behavior.
+
 ## [0.3.7-configurable-replay-keys] — 2026-08-24
 
 ### Added

@@ -35,6 +35,7 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | Timeline scrubbing | Direct seek, previous, next, and timeline-row selection rebuild the same canonical state that sequential playback produces; out-of-range requests preserve the visible state. |
 | Keyboard timeline navigation | Framework-independent mapping accepts unmodified Left, Right, Space, Home, End, and P keys for deterministic previous, next, opening, final, and play-to-end commands; modified and unknown keys are rejected. |
 | Configurable replay keys | Local binding assignments serialize with the player record, resolve custom commands deterministically, reject duplicate or unsupported keys, normalize malformed imported assignments, and restore safe defaults. |
+| Shortcut reference overlay | A framework-independent reference builder lists the active saved bindings in a stable previous, next, opening, final, and play-to-end order; the native inspector presents it through the F1 command and a dismissible overlay. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
 
@@ -49,3 +50,5 @@ Timeline scrubbing never mutates a previously rendered replay state. Instead, `S
 The Godot inspector routes unmodified keyboard input through the same replay inspector methods as the visible controls before a previously focused command button can react. **Left Arrow** steps backward; **Right Arrow** and **Space** step forward; **Home** and **End** rebuild opening and final states; **P** runs to the end. The timeline slider intentionally does not take keyboard focus so its command-table shortcuts remain available, and text-entry controls retain their normal behavior.
 
 The **REPLAY INSPECTOR KEYS** settings panel stores a local binding per replay command. A capture prompt accepts exactly one unmodified supported key; it rejects duplicates and invalid keys without changing the existing assignment, supports **Escape** cancellation, and can restore all defaults. Binding data is normalized after loading or importing a local record, ensuring malformed or duplicate imported values cannot make a replay control unreachable.
+
+The replay inspector exposes the active-binding reference with **F1** and the **KEYS · F1** command-table button. The overlay consumes keyboard input so viewing the reference cannot accidentally move the replay. It displays the current local binding beside every replay command and closes only through **F1**, **Escape**, or its explicit close control.
