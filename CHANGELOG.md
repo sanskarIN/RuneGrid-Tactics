@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.3-replay-diffs] — 2026-08-24
+
+### Added
+
+Added canonical replay state snapshots and a deterministic human-readable diff generator. Mismatch diagnostics now identify scalar encounter state, tile, unit, cooldown, status, and action-order differences in a stable expected-versus-actual format.
+
+### Validation
+
+Added explicit replay diff scenarios for exact snapshot equality, phase divergence, and combined tile, unit, and action divergences. Replay equivalence assertions now emit the formatted diff when a canonical state check fails.
+
 ## [0.3.2-replays] — 2026-08-24
 
 ### Added

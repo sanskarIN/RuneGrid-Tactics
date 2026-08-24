@@ -60,3 +60,15 @@
 | Native validation | Added replay source contracts and required determinism scenario checks to the repository validator. |
 | Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **17 passed, 0 failed**. |
 | GitHub | Pushed four focused replay engine, test, validation, and documentation commits, ending at `7c75256`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.3-replay-diffs — Human-readable replay mismatch diagnostics
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Canonical snapshot | Added `ReplayStateSnapshot` to preserve a stable textual representation of encounter identity, phase, turn, tiles, units, cooldowns, statuses, reservations, and actions. |
+| Diff generator | Added `ReplayStateDiffGenerator`, which reports deterministic expected-versus-actual scalar, tile, unit, and action differences and formats them for assertion output. |
+| Fingerprints | Refactored `ReplayFingerprint` to use the shared canonical snapshot rather than duplicating serialization rules. |
+| Test ergonomics | Saved-replay equivalence now attaches a human-readable state diff to the assertion message; dedicated tests cover exact match, phase mismatch, and combined entity/action mismatch output. |
+| Native validation | The repository validator now requires the snapshot/diff contracts and their diagnostic test scenarios. |
