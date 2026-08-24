@@ -1,0 +1,27 @@
+name: Godot .NET Source Validation
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ["godot/**", ".github/workflows/godot-dotnet.yml"]
+  pull_request:
+    branches: [main, develop]
+    paths: ["godot/**", ".github/workflows/godot-dotnet.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  csharp-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Restore Godot C# project
+        run: dotnet restore godot/RuneGrid.Tactics.csproj
+      - name: Compile C# source
+        run: dotnet build godot/RuneGrid.Tactics.csproj --no-restore --configuration Release
+      - name: Validate JSON-authored content
+        run: python3 -m json.tool godot/Data/heroes.json >/dev/null && python3 -m json.tool godot/Data/enemies.json >/dev/null && python3 -m json.tool godot/Data/abilities.json >/dev/null && python3 -m json.tool godot/Data/items.json >/dev/null && python3 -m json.tool godot/Data/levels.json >/dev/null && python3 -m json.tool godot/Data/balance.json >/dev/null
