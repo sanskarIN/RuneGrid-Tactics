@@ -374,6 +374,59 @@ public sealed class TacticalGridPathfindingTests
         Assert.True(report.DeterminismDifference.IsMatch);
     }
 
+    [Fact]
+    public void ReplayInspector_SeekRebuildsTheExactActionIndexState()
+    {
+        var record = RecordOneRound("inspector-seek");
+        var inspector = new ReplayInspector(record, BuildEncounter, NoAbilities);
+        var stepped = new ReplayInspector(record, BuildEncounter, NoAbilities);
+
+        Assert.True(inspector.Seek(2));
+        Assert.True(stepped.Step());
+        Assert.True(stepped.Step());
+        var seeked = inspector.BuildReport();
+        var expected = stepped.BuildReport();
+
+        Assert.Equal(2, seeked.CurrentActionIndex);
+        Assert.True(seeked.DeterminismDifference.IsMatch, seeked.DeterminismDifference.ToHumanReadable());
+        Assert.Equal(expected.CurrentFingerprint, seeked.CurrentFingerprint);
+        Assert.True(inspector.ActionRows()[1].IsResolved);
+        Assert.True(inspector.ActionRows()[2].IsCurrent);
+    }
+
+    [Fact]
+    public void ReplayInspector_PreviousAndNextNavigateWithoutChangingCanonicalPlayback()
+    {
+        var record = RecordOneRound("inspector-navigation");
+        var inspector = new ReplayInspector(record, BuildEncounter, NoAbilities);
+
+        Assert.True(inspector.Seek(2));
+        var atSecond = inspector.BuildReport().CurrentFingerprint;
+        Assert.True(inspector.StepBackward());
+        Assert.Equal(1, inspector.BuildReport().CurrentActionIndex);
+        Assert.True(inspector.StepForward());
+        var returned = inspector.BuildReport();
+
+        Assert.Equal(2, returned.CurrentActionIndex);
+        Assert.Equal(atSecond, returned.CurrentFingerprint);
+        Assert.True(returned.DeterminismDifference.IsMatch, returned.DeterminismDifference.ToHumanReadable());
+    }
+
+    [Fact]
+    public void ReplayInspector_RejectsOutOfRangeScrubWithoutChangingVisibleState()
+    {
+        var inspector = new ReplayInspector(RecordOneRound("inspector-bounds"), BuildEncounter, NoAbilities);
+        var initial = inspector.BuildReport();
+
+        Assert.False(inspector.Seek(-1));
+        Assert.False(inspector.Seek(initial.ActionCount + 1));
+        var after = inspector.BuildReport();
+
+        Assert.Equal(initial.CurrentActionIndex, after.CurrentActionIndex);
+        Assert.Equal(initial.CurrentFingerprint, after.CurrentFingerprint);
+        Assert.True(after.DeterminismDifference.IsMatch);
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
