@@ -86,3 +86,5 @@
 | Service integration | Added a native `GameServices.InspectReplay` entry point that uses authored content and the existing seeded encounter factory. |
 | Verification | Added tests for inspector initial report, stepping, completion/reset, and invalid replay rendering. |
 | Native validation | The repository validator now requires inspector source, command-table controls, and inspector test coverage. |
+| Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **24 passed, 0 failed**. |
+| GitHub | Pushed five focused inspector model, command-table UI, test, validation, and documentation commits, ending at `d44c124`, with repository-local author address `sanskarin@outlook.in`. |

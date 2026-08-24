@@ -23,4 +23,4 @@
 - [x] Validate, document, commit, and push replay mismatch diagnostics.
 - [x] Add replay inspector state that exposes archived record playback, fingerprints, and canonical differences.
 - [x] Build the command-table replay inspector screen with replay selection, step/reset controls, state panels, and mismatch rendering.
-- [ ] Add inspector behavior tests and validation contracts, then build, test, commit, and push the native UI update.
+- [x] Add inspector behavior tests and validation contracts, then build, test, commit, and push the native UI update.
