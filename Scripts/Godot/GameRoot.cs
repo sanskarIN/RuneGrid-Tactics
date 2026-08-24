@@ -252,11 +252,21 @@ public partial class GameRoot : Node
         root.AddChild(MakeHeader("REPLAY INSPECTOR", $"{report.Record.Mode} · {report.Record.Seed} · action {report.CurrentActionIndex}/{report.ActionCount}", ShowReplays));
 
         var command = new HBoxContainer(); command.AddThemeConstantOverride("separation", 8);
+        var previous = MakeButton("← PREVIOUS", () => { inspector.StepBackward(); }); previous.Disabled = report.CurrentActionIndex == 0; command.AddChild(previous);
         var step = MakeButton(report.IsComplete ? "PLAYBACK COMPLETE" : "STEP ACTION", () => { inspector.Step(); }, primary: true); step.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(step);
+        var next = MakeButton("NEXT →", () => { inspector.StepForward(); }); next.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(next);
         var advance = MakeButton("PLAY TO END", () => { inspector.StepToEnd(); }); advance.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(advance);
         command.AddChild(MakeButton("RESET INSPECTION", inspector.Reset));
         command.AddChild(MakeLabel(report.NextAction is null ? "No pending action." : $"NEXT · {FormatReplayAction(report.NextAction)}", 14, _parchment, expand: true));
         root.AddChild(command);
+
+        var scrubber = new HBoxContainer(); scrubber.AddThemeConstantOverride("separation", 10);
+        scrubber.AddChild(MakeLabel($"TIMELINE {report.CurrentActionIndex}/{report.ActionCount}", 13, _route));
+        var timeline = new HSlider { MinValue = 0, MaxValue = report.ActionCount, Step = 1, Value = report.CurrentActionIndex, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, TooltipText = "Drag to rebuild and inspect a precise replay action state." };
+        timeline.ValueChanged += value => { inspector.Seek((int)Math.Round(value)); };
+        scrubber.AddChild(timeline);
+        scrubber.AddChild(MakeLabel(report.CurrentActionIndex == 0 ? "OPENING STATE" : report.IsComplete ? "FINAL STATE" : $"AFTER ACTION {report.CurrentActionIndex}", 13, _parchment));
+        root.AddChild(scrubber);
 
         var body = new HBoxContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill }; body.AddThemeConstantOverride("separation", 10);
         var archive = MakeColumn(8); archive.CustomMinimumSize = new Vector2(280, 0);
@@ -276,8 +286,14 @@ public partial class GameRoot : Node
         body.AddChild(audit);
         root.AddChild(body);
 
-        var actions = MakePanel(); var rows = MakeColumn(4); actions.AddChild(rows); rows.AddChild(MakeLabel("ACTION TIMELINE", 15, _route));
-        foreach (var row in inspector.ActionRows()) rows.AddChild(MakeLabel($"{(row.IsResolved ? "✓" : row.IsCurrent ? "→" : "·")} {row.Index + 1:00}  {row.Label}", 12, row.IsCurrent ? _route : row.IsResolved ? new Color("A9D9B3") : _parchment, wrap: true));
+        var actions = MakePanel(); var rows = MakeColumn(4); actions.AddChild(rows); rows.AddChild(MakeLabel("ACTION TIMELINE · SELECT AN ACTION TO SCRUB TO ITS RESULT", 15, _route));
+        foreach (var row in inspector.ActionRows())
+        {
+            var label = $"{(row.IsResolved ? "✓" : row.IsCurrent ? "→" : "·")} {row.Index + 1:00}  {row.Label}";
+            var actionButton = MakeButton(label, () => { inspector.Seek(row.Index + 1); }, primary: row.IsCurrent);
+            actionButton.AddThemeFontSizeOverride("font_size", 12);
+            rows.AddChild(actionButton);
+        }
         root.AddChild(actions);
         _screen.AddChild(root);
     }
