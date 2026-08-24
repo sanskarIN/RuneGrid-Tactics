@@ -15,7 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Scripts/Core/TacticalTypes.cs" Link="Core/TacticalTypes.cs" />
+    <Compile Include="../Scripts/Core/DeterministicRandom.cs" Link="Core/DeterministicRandom.cs" />
     <Compile Include="../Scripts/Core/TacticalGrid.cs" Link="Core/TacticalGrid.cs" />
     <Compile Include="../Scripts/Core/TacticalClassRules.cs" Link="Core/TacticalClassRules.cs" />
+    <Compile Include="../Scripts/Core/GameSession.cs" Link="Core/GameSession.cs" />
+    <Compile Include="../Scripts/Core/ReplayPlayer.cs" Link="Core/ReplayPlayer.cs" />
+    <Compile Include="../Scripts/Core/ReplayFingerprint.cs" Link="Core/ReplayFingerprint.cs" />
   </ItemGroup>
 </Project>
