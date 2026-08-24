@@ -196,7 +196,11 @@ public sealed class TacticalGridPathfindingTests
         Assert.False(second.IsInvalid);
         Assert.True(first.IsComplete);
         Assert.Equal(first.Fingerprint, second.Fingerprint);
-        Assert.Equal(ReplayFingerprint.Create(ExecuteReference(restored!), restored), first.Fingerprint);
+        var expected = ReplayStateSnapshot.Capture(ExecuteReference(restored!), restored);
+        var actual = ReplayStateSnapshot.Capture(first.Session, restored);
+        var diff = ReplayStateDiffGenerator.Compare(expected, actual);
+        Assert.True(diff.IsMatch, diff.ToHumanReadable());
+        Assert.Equal(expected.Fingerprint, actual.Fingerprint);
     }
 
     [Fact]
@@ -252,6 +256,54 @@ public sealed class TacticalGridPathfindingTests
         var second = new ReplayPlayer(RecordOneRound("field-beta"), BuildEncounter, NoAbilities);
 
         Assert.NotEqual(first.Fingerprint, second.Fingerprint);
+    }
+
+    [Fact]
+    public void ReplayDiff_ReportsExactMatchForEquivalentCanonicalSnapshots()
+    {
+        var record = RecordOneRound("diff-match");
+        var snapshot = ReplayStateSnapshot.Capture(ExecuteReference(record), record);
+
+        var diff = ReplayStateDiffGenerator.Compare(snapshot, snapshot);
+
+        Assert.True(diff.IsMatch);
+        Assert.Equal("Replay states match exactly.", diff.ToHumanReadable());
+    }
+
+    [Fact]
+    public void ReplayDiff_ReportsPhaseDivergenceInStableHumanReadableText()
+    {
+        var record = RecordOneRound("diff-phase");
+        var expected = ReplayStateSnapshot.Capture(ExecuteReference(record), record);
+        var actual = expected with { Phase = GamePhase.Enemy };
+
+        var diff = ReplayStateDiffGenerator.Compare(expected, actual);
+
+        Assert.False(diff.IsMatch);
+        Assert.Equal(new[] { "phase: expected Player, actual Enemy" }, diff.Lines);
+        Assert.Equal("Replay state mismatch (1 difference):" + Environment.NewLine + " - phase: expected Player, actual Enemy", diff.ToHumanReadable());
+    }
+
+    [Fact]
+    public void ReplayDiff_ReportsTileUnitAndActionDivergences()
+    {
+        var record = RecordOneRound("diff-entities");
+        var expected = ReplayStateSnapshot.Capture(ExecuteReference(record), record);
+        var tileKey = expected.Tiles.Keys.First();
+        var unitKey = expected.Units.Keys.First();
+        var actualTiles = expected.Tiles.ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.Ordinal);
+        var actualUnits = expected.Units.ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.Ordinal);
+        actualTiles[tileKey] = "kind=Wall; elevation=99; integrity=none; link=none; cover=0; highGround=False";
+        actualUnits[unitKey] = "template=altered; faction=Hero; position=(9,9); health=1; energy=0; shield=0; moved=True; acted=True; reservation=none";
+        var actual = expected with { Tiles = actualTiles, Units = actualUnits, Actions = expected.Actions.Concat(["turn=9; actor=system; type=unexpected; target=none; ability=none"]).ToList() };
+
+        var diff = ReplayStateDiffGenerator.Compare(expected, actual);
+        var message = diff.ToHumanReadable();
+
+        Assert.False(diff.IsMatch);
+        Assert.Contains($"tile {tileKey}: expected [", message);
+        Assert.Contains($"unit {unitKey}: expected [", message);
+        Assert.Contains($"action[{expected.Actions.Count}]: expected [<none>], actual [turn=9; actor=system; type=unexpected; target=none; ability=none]", message);
     }
 
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)

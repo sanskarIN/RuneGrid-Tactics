@@ -21,5 +21,6 @@
     <Compile Include="../Scripts/Core/GameSession.cs" Link="Core/GameSession.cs" />
     <Compile Include="../Scripts/Core/ReplayPlayer.cs" Link="Core/ReplayPlayer.cs" />
     <Compile Include="../Scripts/Core/ReplayFingerprint.cs" Link="Core/ReplayFingerprint.cs" />
+    <Compile Include="../Scripts/Core/ReplayStateDiff.cs" Link="Core/ReplayStateDiff.cs" />
   </ItemGroup>
 </Project>
