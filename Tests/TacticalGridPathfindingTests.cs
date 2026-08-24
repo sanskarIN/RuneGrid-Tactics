@@ -427,6 +427,29 @@ public sealed class TacticalGridPathfindingTests
         Assert.True(after.DeterminismDifference.IsMatch);
     }
 
+    [Fact]
+    public void ReplayInspectorShortcutMap_MapsTimelineKeysAndRejectsModifiedOrUnknownKeys()
+    {
+        var expected = new Dictionary<string, ReplayInspectorShortcut>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Left"] = ReplayInspectorShortcut.Previous,
+            ["Right"] = ReplayInspectorShortcut.Next,
+            ["Space"] = ReplayInspectorShortcut.Next,
+            ["Home"] = ReplayInspectorShortcut.Start,
+            ["End"] = ReplayInspectorShortcut.End,
+            ["P"] = ReplayInspectorShortcut.PlayToEnd
+        };
+
+        foreach (var entry in expected)
+        {
+            Assert.True(ReplayInspectorShortcutMap.TryParse(entry.Key, hasModifier: false, out var shortcut));
+            Assert.Equal(entry.Value, shortcut);
+        }
+
+        Assert.False(ReplayInspectorShortcutMap.TryParse("Left", hasModifier: true, out _));
+        Assert.False(ReplayInspectorShortcutMap.TryParse("Escape", hasModifier: false, out _));
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)

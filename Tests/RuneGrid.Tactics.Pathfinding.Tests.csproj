@@ -23,5 +23,6 @@
     <Compile Include="../Scripts/Core/ReplayFingerprint.cs" Link="Core/ReplayFingerprint.cs" />
     <Compile Include="../Scripts/Core/ReplayStateDiff.cs" Link="Core/ReplayStateDiff.cs" />
     <Compile Include="../Scripts/Core/ReplayInspector.cs" Link="Core/ReplayInspector.cs" />
+    <Compile Include="../Scripts/Core/ReplayInspectorShortcuts.cs" Link="Core/ReplayInspectorShortcuts.cs" />
   </ItemGroup>
 </Project>
