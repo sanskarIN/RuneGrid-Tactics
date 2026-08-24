@@ -39,6 +39,8 @@ Run the deterministic advanced pathfinding suite with `dotnet test Tests/RuneGri
 
 Archived replay records can be reviewed through **REPLAYS → INSPECT** in the command table. The inspector shows the reconstructed field, current and expected fingerprints, deterministic audit result, differences from the opening state, action timeline, rejected-action messages, and step/reset/play-to-end controls. Use the timeline slider, **PREVIOUS**, **NEXT**, or any action row to rebuild the exact post-action state without accumulating playback drift. While inspecting, use **Left Arrow** for previous, **Right Arrow** or **Space** for next, **Home** for the opening state, **End** for the final state, and **P** to play to the end; modified key combinations and active text entry are intentionally ignored.
 
+Replay inspector commands are configurable from **SETTINGS & ACCESSIBILITY → REPLAY INSPECTOR KEYS**. Select a command, press one unmodified supported key, and the local record saves it immediately. Each command must remain unique. The settings panel accepts letters, arrows, **Space**, **Home**, **End**, **Page Up**, and **Page Down**; it rejects duplicate, unsupported, and modifier-key assignments, and offers **RESTORE DEFAULT REPLAY KEYS**.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status

@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.7-configurable-replay-keys] — 2026-08-24
+
+### Added
+
+Added persistent replay inspector key configuration under **SETTINGS & ACCESSIBILITY**. Players can capture a distinct supported key for previous, next, opening state, final state, and play-to-end commands, restore defaults, and see the active bindings in the inspector legend and timeline tooltip.
+
+### Validation
+
+Added deterministic tests for custom binding serialization and resolution, duplicate and unsupported key rejection, malformed imported-binding normalization, and default restoration. Native validation now requires the binding model and named test scenarios.
+
 ## [0.3.6-replay-shortcuts] — 2026-08-24
 
 ### Added
