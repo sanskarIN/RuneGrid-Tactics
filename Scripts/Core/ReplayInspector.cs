@@ -8,7 +8,7 @@ public sealed class ReplayInspector
     private readonly IReadOnlyDictionary<string, AbilityDefinition> _abilities;
     private readonly ReplayStateSnapshot _initial;
 
-    public ReplayPlayer Player { get; }
+    public ReplayPlayer Player { get; private set; }
     public event Action? Changed;
 
     public ReplayInspector(ReplayRecord record, Func<string, GameMode, Difficulty, EncounterState> buildEncounter, IReadOnlyDictionary<string, AbilityDefinition> abilities)
@@ -53,10 +53,31 @@ public sealed class ReplayInspector
         return count;
     }
 
+    public bool Seek(int actionIndex)
+    {
+        if (actionIndex < 0 || actionIndex > _record.Actions.Count) return false;
+        var rebuilt = new ReplayPlayer(_record, _buildEncounter, _abilities);
+        for (var index = 0; index < actionIndex; index++)
+        {
+            if (!rebuilt.Step())
+            {
+                Player = rebuilt;
+                Changed?.Invoke();
+                return false;
+            }
+        }
+        Player = rebuilt;
+        Changed?.Invoke();
+        return true;
+    }
+
+    public bool StepBackward() => Seek(Math.Max(0, Player.CurrentActionIndex - 1));
+
+    public bool StepForward() => Seek(Math.Min(_record.Actions.Count, Player.CurrentActionIndex + 1));
+
     public void Reset()
     {
-        Player.Reset();
-        Changed?.Invoke();
+        Seek(0);
     }
 
     public IReadOnlyList<ReplayInspectorActionRow> ActionRows() => _record.Actions.Select((action, index) => new ReplayInspectorActionRow(index, index < Player.CurrentActionIndex, index == Player.CurrentActionIndex && !Player.IsComplete, action, DescribeAction(action))).ToList();
