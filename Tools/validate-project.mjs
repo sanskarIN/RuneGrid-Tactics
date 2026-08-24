@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(process.argv[2] ?? new URL("..", import.meta.url).pathname);
 const jsonFiles = ["heroes.json", "enemies.json", "abilities.json", "items.json", "levels.json", "balance.json"];
-const required = ["project.godot", "RuneGrid.Tactics.csproj", "Scenes/Main.tscn", "Scripts/Godot/GameRoot.cs", "Scripts/Core/GameSession.cs", "export_presets.cfg", "Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj", "Tests/TacticalGridPathfindingTests.cs"];
+const required = ["project.godot", "RuneGrid.Tactics.csproj", "Scenes/Main.tscn", "Scripts/Godot/GameRoot.cs", "Scripts/Core/GameSession.cs", "Scripts/Core/ReplayPlayer.cs", "Scripts/Core/ReplayFingerprint.cs", "export_presets.cfg", "Tests/RuneGrid.Tactics.Pathfinding.Tests.csproj", "Tests/TacticalGridPathfindingTests.cs"];
 
 for (const relative of required) {
   await stat(join(root, relative));
@@ -37,9 +37,17 @@ for (const feature of ["FindTacticalRoute", "FindBestApproach", "FindFlankAnchor
   if (!gridSource.includes(feature)) throw new Error(`Missing advanced grid feature: ${feature}`);
 }
 if (!sessionSource.includes("ReserveSuggestedRoute")) throw new Error("Native session does not expose tactical route reservations.");
+if (!sessionSource.includes("RecordSystem(\"end-turn\"")) throw new Error("Native session does not record deterministic end-turn events.");
+
+const replaySource = await readFile(join(root, "Scripts", "Core", "ReplayPlayer.cs"), "utf8");
+const fingerprintSource = await readFile(join(root, "Scripts", "Core", "ReplayFingerprint.cs"), "utf8");
+for (const contract of ["LastError", "SameAction", "ReplayEnemyAction", "CreateSession"]) {
+  if (!replaySource.includes(contract)) throw new Error(`Missing replay determinism contract: ${contract}`);
+}
+if (!fingerprintSource.includes("DeterministicRandom.Hash")) throw new Error("Replay fingerprint is not deterministic.");
 
 const testSource = await readFile(join(root, "Tests", "TacticalGridPathfindingTests.cs"), "utf8");
-const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics"];
+const requiredScenarios = ["StandardUnit_AccountsForDifficultTerrainInTravelCost", "Trailblazer_ReducesDifficultTerrainToOneMovement", "WingedUnit_TreatsHazardAsOneMovement", "Phasewalker_CanCrossWallButCannotFinishInsideWall", "SafeRoute_AvoidsThreatenedDirectCorridorWhenDetourIsCheaperTactically", "ReservationPenalty_ReroutesAroundAnAlliedReservedTile", "BestApproach_TargetsAnOpenTileAdjacentToOccupiedEnemy", "FlankAnchors_ReturnReachableOppositeSidePositions", "RouteAnalysis_ReportsCoverHighGroundAndThreatDiagnostics", "SavedReplay_RoundTripsAndReproducesCanonicalFinalFingerprint", "ReplayPlayback_IsRepeatableAcrossIndependentSavedEncounterInstances", "ReplayReset_RestoresTheExactSeededInitialFingerprint", "ReplayRejectsOutOfOrderEnemyActionWithoutAdvancingPlayback", "ReplayFingerprint_ChangesWhenSavedEncounterSeedChanges"];
 for (const scenario of requiredScenarios) {
   if (!testSource.includes(scenario)) throw new Error(`Missing pathfinding test scenario: ${scenario}`);
 }
@@ -49,4 +57,4 @@ for (const target of ["Windows Desktop", "Linux/X11", "Android"]) {
   if (!presets.includes(`name="${target}"`)) throw new Error(`Missing export preset: ${target}`);
 }
 
-console.log(`Godot project structure, ${jsonFiles.length} JSON content files, expanded unit classes, advanced tactical routing, and pathfinding test coverage validated.`);
+console.log(`Godot project structure, ${jsonFiles.length} JSON content files, expanded unit classes, advanced routing, and replay determinism coverage validated.`);
