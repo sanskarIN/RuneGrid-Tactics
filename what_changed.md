@@ -15,4 +15,5 @@
 | Automation | Replaced the previous automation with the Godot .NET workflow that restores and builds `RuneGrid.Tactics.csproj` and validates native project records. |
 | Documentation | Rewrote README, architecture, privacy, security, contribution, release, roadmap, and changelog documentation for the Godot C#–only product. |
 | Validation | Native structure and six JSON files validate successfully via `node Tools/validate-project.mjs .`; whitespace validation also passes. |
+| GitHub | Pushed the complete native-only conversion in commit `06a0e4a` using the repository-local author address `sanskarin@outlook.in`. |
 | Remaining release gate | Use a machine with Godot 4 .NET and the matching .NET SDK to import the project, compile C#, create platform packages, and run desktop/mobile smoke tests. |
