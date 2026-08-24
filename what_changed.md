@@ -58,3 +58,5 @@
 | Action recording | Added explicit authoritative `end-turn` replay actions so player phase transitions are replayable without timing inference. |
 | Test coverage | Added saved replay JSON round-trip, independent playback, reset, malformed action order, and changed-seed fingerprint scenarios. |
 | Native validation | Added replay source contracts and required determinism scenario checks to the repository validator. |
+| Verification | Built the Godot C# project in Release with zero warnings/errors and ran the complete native suite successfully: **17 passed, 0 failed**. |
+| GitHub | Pushed four focused replay engine, test, validation, and documentation commits, ending at `7c75256`, with repository-local author address `sanskarin@outlook.in`. |

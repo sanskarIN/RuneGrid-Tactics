@@ -17,4 +17,4 @@
 - [x] Commit and push the validated Godot .NET pathfinding test suite to GitHub.
 - [x] Add canonical replay playback fixtures for deterministic encounter seeds and tactical actions.
 - [x] Test repeated replay playback, saved-record round trips, action-order rejection, and fingerprint equality across encounters.
-- [ ] Run the native build and complete suite, validate replay metadata, then commit and push replay determinism coverage.
+- [x] Run the native build and complete suite, validate replay metadata, then commit and push replay determinism coverage.
