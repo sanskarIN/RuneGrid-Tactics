@@ -1,0 +1,10 @@
+.godot/
+.mono/
+.vs/
+.vscode/.csharp/
+bin/
+obj/
+build/
+*.user
+*.suo
+export_credentials.cfg
