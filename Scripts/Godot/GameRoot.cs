@@ -17,6 +17,7 @@ public partial class GameRoot : Node
     private ReplayInspector? _replayInspector;
     private ReplayInspectorShortcut? _bindingCapture;
     private string? _keyBindingNotice;
+    private bool _showReplayShortcutOverlay;
 
     public override void _Ready()
     {
@@ -61,8 +62,25 @@ public partial class GameRoot : Node
             return;
         }
         if (_replayInspector is null || @event is not InputEventKey key || !key.Pressed || key.Echo) return;
+        if (_showReplayShortcutOverlay)
+        {
+            if (!key.CtrlPressed && !key.ShiftPressed && !key.AltPressed && !key.MetaPressed && key.Keycode is Key.F1 or Key.Escape)
+            {
+                _showReplayShortcutOverlay = false;
+                ShowReplayInspector();
+            }
+            GetViewport().SetInputAsHandled();
+            return;
+        }
         var focused = GetViewport().GuiGetFocusOwner();
         if (focused is LineEdit or TextEdit) return;
+        if (!key.CtrlPressed && !key.ShiftPressed && !key.AltPressed && !key.MetaPressed && key.Keycode == Key.F1)
+        {
+            _showReplayShortcutOverlay = true;
+            ShowReplayInspector();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
         if (!_services.SaveData.Accessibility.ReplayKeyBindings.TryResolve(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var shortcut)) return;
 
         switch (shortcut)
@@ -264,6 +282,7 @@ public partial class GameRoot : Node
 
     private void ShowReplays()
     {
+        _showReplayShortcutOverlay = false;
         ReplaceScreen();
         var root = MakeColumn(12); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 30); root.AddChild(MakeHeader("ROUTE ARCHIVE", "Replay records retain seed, mode, difficulty, outcome, and compact tactical actions.", ShowMainMenu));
         if (_services.Progression.Profile.Replays.Count == 0) root.AddChild(MakeLabel("No route has been archived yet. Complete a field to retain its deterministic record.", 17, _parchment));
@@ -279,6 +298,7 @@ public partial class GameRoot : Node
 
     private void OpenReplayInspector(ReplayRecord replay)
     {
+        _showReplayShortcutOverlay = false;
         _replayInspector = _services.InspectReplay(replay);
         _replayInspector.Changed += ShowReplayInspector;
         ShowReplayInspector();
@@ -299,6 +319,7 @@ public partial class GameRoot : Node
         var next = MakeButton("NEXT →", () => { inspector.StepForward(); }); next.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(next);
         var advance = MakeButton("PLAY TO END", () => { inspector.StepToEnd(); }); advance.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(advance);
         command.AddChild(MakeButton("RESET INSPECTION", inspector.Reset));
+        var reference = MakeButton("KEYS · F1", () => { _showReplayShortcutOverlay = true; ShowReplayInspector(); }); reference.TooltipText = "Open the active replay shortcut reference."; command.AddChild(reference);
         command.AddChild(MakeLabel(report.NextAction is null ? "No pending action." : $"NEXT · {FormatReplayAction(report.NextAction)}", 14, _parchment, expand: true));
         root.AddChild(MakeLabel(BuildReplayShortcutLegend(), 12, new Color("AEB6AC")));
         root.AddChild(command);
@@ -339,6 +360,35 @@ public partial class GameRoot : Node
         }
         root.AddChild(actions);
         _screen.AddChild(root);
+        if (_showReplayShortcutOverlay) _screen.AddChild(BuildReplayShortcutReferenceOverlay());
+    }
+
+    private Control BuildReplayShortcutReferenceOverlay()
+    {
+        var overlay = new ColorRect { Color = new Color(0.02f, 0.06f, 0.07f, 0.9f), MouseFilter = Control.MouseFilterEnum.Stop, TooltipText = "Press F1 or Escape to close this shortcut reference." };
+        overlay.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        var card = MakePanel(); card.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.Center, Control.LayoutPresetMode.Minsize, 0); card.Position = new Vector2(300, 105); card.Size = new Vector2(680, 510);
+        var content = MakeColumn(10); card.AddChild(content);
+        content.AddChild(MakeLabel("SHORTCUT REFERENCE", 28, _route));
+        content.AddChild(MakeLabel("ACTIVE REPLAY INSPECTOR BINDINGS", 13, new Color("D4BF7E")));
+        foreach (var line in ReplayInspectorShortcutReference.Build(_services.SaveData.Accessibility.ReplayKeyBindings))
+        {
+            var row = new HBoxContainer(); row.AddThemeConstantOverride("separation", 12);
+            row.AddChild(MakeLabel(line.Command, 16, _parchment, expand: true));
+            row.AddChild(MakeLabel(line.Description, 12, new Color("AEB6AC"), expand: true));
+            row.AddChild(MakeLabel(line.Binding, 15, _route));
+            content.AddChild(row);
+        }
+        content.AddChild(MakeLabel("F1 or Escape closes this reference. Configure bindings in Settings & Accessibility.", 13, _parchment, wrap: true));
+        content.AddChild(MakeButton("CLOSE REFERENCE", CloseReplayShortcutReference, primary: true));
+        overlay.AddChild(card);
+        return overlay;
+    }
+
+    private void CloseReplayShortcutReference()
+    {
+        _showReplayShortcutOverlay = false;
+        ShowReplayInspector();
     }
 
     private void ShowSettings()

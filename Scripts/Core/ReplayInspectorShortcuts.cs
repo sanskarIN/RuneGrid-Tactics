@@ -158,3 +158,18 @@ public sealed class ReplayInspectorKeyBindings
 
     private bool IsDefaultNextBinding => string.Equals(Next, Defaults[ReplayInspectorShortcut.Next], StringComparison.OrdinalIgnoreCase);
 }
+
+public sealed record ReplayShortcutReferenceLine(ReplayInspectorShortcut Shortcut, string Command, string Binding, string Description);
+
+/// <summary>Builds the user-facing replay shortcut reference from the active local bindings.</summary>
+public static class ReplayInspectorShortcutReference
+{
+    public static IReadOnlyList<ReplayShortcutReferenceLine> Build(ReplayInspectorKeyBindings bindings) =>
+    [
+        new(ReplayInspectorShortcut.Previous, "Previous action", bindings.Get(ReplayInspectorShortcut.Previous), "Rebuild the prior recorded state."),
+        new(ReplayInspectorShortcut.Next, "Next action", bindings.Get(ReplayInspectorShortcut.Next) == "Right" ? "Right / Space" : bindings.Get(ReplayInspectorShortcut.Next), "Apply one authoritative action."),
+        new(ReplayInspectorShortcut.Start, "Opening state", bindings.Get(ReplayInspectorShortcut.Start), "Rebuild before action one."),
+        new(ReplayInspectorShortcut.End, "Final state", bindings.Get(ReplayInspectorShortcut.End), "Rebuild after the final action."),
+        new(ReplayInspectorShortcut.PlayToEnd, "Play to end", bindings.Get(ReplayInspectorShortcut.PlayToEnd), "Resolve every remaining authoritative action.")
+    ];
+}
