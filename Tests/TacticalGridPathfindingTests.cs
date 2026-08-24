@@ -515,6 +515,24 @@ public sealed class TacticalGridPathfindingTests
         Assert.Equal("Resolve every remaining authoritative action.", reference[^1].Description);
     }
 
+    [Fact]
+    public void ReplayInspectorOnboarding_PersistsFirstTimeDismissalWithoutReopening()
+    {
+        var onboarding = new ReplayInspectorOnboarding();
+
+        Assert.True(onboarding.ShouldShowIntro);
+        var imported = JsonSerializer.Deserialize<ReplayInspectorOnboarding>(JsonSerializer.Serialize(onboarding));
+        Assert.NotNull(imported);
+        Assert.True(imported!.ShouldShowIntro);
+
+        imported.DismissIntro();
+        var restored = JsonSerializer.Deserialize<ReplayInspectorOnboarding>(JsonSerializer.Serialize(imported));
+
+        Assert.NotNull(restored);
+        Assert.True(restored!.HasSeenReplayInspectorIntro);
+        Assert.False(restored.ShouldShowIntro);
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
