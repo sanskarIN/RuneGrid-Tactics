@@ -18,6 +18,8 @@ public partial class GameServices : Node
         Encounters = new EncounterFactory(Content);
         Saves = new LocalSaveRepository();
         SaveData = Saves.Load();
+        SaveData.Accessibility.ReplayKeyBindings ??= ReplayInspectorKeyBindings.CreateDefault();
+        SaveData.Accessibility.ReplayKeyBindings.Normalize();
         Progression = new ProgressionService(SaveData.Profile);
         Progression.EnsureNativeRoster();
         Persist();
@@ -45,6 +47,8 @@ public partial class GameServices : Node
     public void ReplaceSave(SaveEnvelope imported)
     {
         SaveData = imported;
+        SaveData.Accessibility.ReplayKeyBindings ??= ReplayInspectorKeyBindings.CreateDefault();
+        SaveData.Accessibility.ReplayKeyBindings.Normalize();
         Progression = new ProgressionService(SaveData.Profile);
         Progression.EnsureNativeRoster();
         Persist();

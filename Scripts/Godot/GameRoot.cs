@@ -15,6 +15,8 @@ public partial class GameRoot : Node
     private Control _screen = null!;
     private ulong _nextEnemyActionMs;
     private ReplayInspector? _replayInspector;
+    private ReplayInspectorShortcut? _bindingCapture;
+    private string? _keyBindingNotice;
 
     public override void _Ready()
     {
@@ -36,10 +38,32 @@ public partial class GameRoot : Node
 
     public override void _Input(InputEvent @event)
     {
+        if (_bindingCapture is { } captured && @event is InputEventKey bindingKey && bindingKey.Pressed && !bindingKey.Echo)
+        {
+            if (bindingKey.Keycode == Key.Escape)
+            {
+                _bindingCapture = null;
+                _keyBindingNotice = "Key binding capture cancelled.";
+            }
+            else if (bindingKey.CtrlPressed || bindingKey.ShiftPressed || bindingKey.AltPressed || bindingKey.MetaPressed)
+            {
+                _keyBindingNotice = "Use one unmodified supported key.";
+            }
+            else if (_services.SaveData.Accessibility.ReplayKeyBindings.TryAssign(captured, bindingKey.Keycode.ToString(), out var error))
+            {
+                _bindingCapture = null;
+                _keyBindingNotice = $"{ReplayInspectorKeyBindings.LabelFor(captured)} now uses {_services.SaveData.Accessibility.ReplayKeyBindings.Get(captured)}.";
+                _services.Persist();
+            }
+            else _keyBindingNotice = error;
+            GetViewport().SetInputAsHandled();
+            ShowSettings();
+            return;
+        }
         if (_replayInspector is null || @event is not InputEventKey key || !key.Pressed || key.Echo) return;
         var focused = GetViewport().GuiGetFocusOwner();
         if (focused is LineEdit or TextEdit) return;
-        if (!ReplayInspectorShortcutMap.TryParse(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var shortcut)) return;
+        if (!_services.SaveData.Accessibility.ReplayKeyBindings.TryResolve(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var shortcut)) return;
 
         switch (shortcut)
         {
@@ -276,12 +300,12 @@ public partial class GameRoot : Node
         var advance = MakeButton("PLAY TO END", () => { inspector.StepToEnd(); }); advance.Disabled = report.IsComplete || report.IsInvalid; command.AddChild(advance);
         command.AddChild(MakeButton("RESET INSPECTION", inspector.Reset));
         command.AddChild(MakeLabel(report.NextAction is null ? "No pending action." : $"NEXT · {FormatReplayAction(report.NextAction)}", 14, _parchment, expand: true));
-        root.AddChild(MakeLabel("KEYS · ←/→ or Space step  ·  Home/End jump  ·  P play to end", 12, new Color("AEB6AC")));
+        root.AddChild(MakeLabel(BuildReplayShortcutLegend(), 12, new Color("AEB6AC")));
         root.AddChild(command);
 
         var scrubber = new HBoxContainer(); scrubber.AddThemeConstantOverride("separation", 10);
         scrubber.AddChild(MakeLabel($"TIMELINE {report.CurrentActionIndex}/{report.ActionCount}", 13, _route));
-        var timeline = new HSlider { MinValue = 0, MaxValue = report.ActionCount, Step = 1, Value = report.CurrentActionIndex, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, FocusMode = Control.FocusModeEnum.None, TooltipText = "Drag to rebuild and inspect a precise replay action state. Keyboard: Left/Right step, Home/End jump, P play." };
+        var timeline = new HSlider { MinValue = 0, MaxValue = report.ActionCount, Step = 1, Value = report.CurrentActionIndex, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, FocusMode = Control.FocusModeEnum.None, TooltipText = $"Drag to rebuild a precise replay state. {BuildReplayShortcutLegend()}" };
         timeline.ValueChanged += value => { inspector.Seek((int)Math.Round(value)); };
         scrubber.AddChild(timeline);
         scrubber.AddChild(MakeLabel(report.CurrentActionIndex == 0 ? "OPENING STATE" : report.IsComplete ? "FINAL STATE" : $"AFTER ACTION {report.CurrentActionIndex}", 13, _parchment));
@@ -321,16 +345,33 @@ public partial class GameRoot : Node
     {
         ReplaceScreen();
         var settings = _services.SaveData.Accessibility;
-        var root = MakeColumn(10); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 30); root.AddChild(MakeHeader("SETTINGS & ACCESSIBILITY", "All preferences are local and can be exported with a field record.", ShowMainMenu));
+        var root = MakeColumn(10); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 30); root.AddChild(MakeHeader("SETTINGS & ACCESSIBILITY", "All preferences are local and can be exported with a field record.", ExitSettings));
         root.AddChild(MakeToggle("High contrast", settings.HighContrast, value => { settings.HighContrast = value; _services.Persist(); }));
         root.AddChild(MakeToggle("Reduced motion", settings.ReducedMotion, value => { settings.ReducedMotion = value; _services.Persist(); }));
         root.AddChild(MakeToggle("Reduced flashing", settings.ReducedFlashing, value => { settings.ReducedFlashing = value; _services.Persist(); }));
         root.AddChild(MakeToggle("Vibration (on compatible mobile exports)", settings.Vibration, value => { settings.Vibration = value; _services.Persist(); }));
         root.AddChild(MakeToggle("Require tactical action confirmation", settings.ConfirmActions, value => { settings.ConfirmActions = value; _services.Persist(); }));
         root.AddChild(MakeButton($"Text scale: {settings.TextScale}", () => { settings.TextScale = settings.TextScale == "standard" ? "large" : settings.TextScale == "large" ? "x-large" : "standard"; _services.Persist(); ShowSettings(); }));
+        root.AddChild(MakeLabel("REPLAY INSPECTOR KEYS", 17, _route));
+        root.AddChild(MakeLabel(_bindingCapture is { } awaiting ? $"Press one unmodified key for {ReplayInspectorKeyBindings.LabelFor(awaiting)}. Supported: A–Z, arrows, Space, Home, End, Page Up, Page Down. Escape cancels." : "Select a command, then press one supported key. Every command must keep a distinct key.", 13, _parchment, wrap: true));
+        if (!string.IsNullOrWhiteSpace(_keyBindingNotice)) root.AddChild(MakeLabel(_keyBindingNotice, 13, new Color("D4BF7E"), wrap: true));
+        foreach (var shortcut in Enum.GetValues<ReplayInspectorShortcut>())
+        {
+            var bindingButton = MakeButton($"{ReplayInspectorKeyBindings.LabelFor(shortcut)} · {settings.ReplayKeyBindings.Get(shortcut)}", () => { _bindingCapture = shortcut; _keyBindingNotice = null; ShowSettings(); }, primary: _bindingCapture == shortcut);
+            bindingButton.TooltipText = "Select this command, then press its new key.";
+            root.AddChild(bindingButton);
+        }
+        root.AddChild(MakeButton("RESTORE DEFAULT REPLAY KEYS", () => { settings.ReplayKeyBindings.RestoreDefaults(); _bindingCapture = null; _keyBindingNotice = "Replay inspector keys restored to defaults."; _services.Persist(); ShowSettings(); }));
         root.AddChild(MakeButton("EXPORT LOCAL RECORD", ExportLocalRecord, primary: true));
         root.AddChild(MakeButton("OPEN IMPORT DIALOG", ImportLocalRecord));
         _screen.AddChild(root);
+    }
+
+    private void ExitSettings()
+    {
+        _bindingCapture = null;
+        _keyBindingNotice = null;
+        ShowMainMenu();
     }
 
     private void ExportLocalRecord()
@@ -400,4 +441,10 @@ public partial class GameRoot : Node
     private Control MakeHeader(string title, string subtitle, Action back) { var row = new HBoxContainer(); row.AddChild(MakeLabel(title, 25, _parchment, expand: true)); row.AddChild(MakeLabel(subtitle, 13, _route)); row.AddChild(MakeButton("COMMAND TABLE", back)); return row; }
     private static string ModeDescription(GameMode mode) => mode switch { GameMode.Campaign => "Story route through the fractured meridian.", GameMode.Expedition => "Seeded procedural encounter with local progression.", GameMode.Daily => "Shared date-marked deterministic field.", GameMode.Weekly => "A denser weekly anomaly patrol.", GameMode.Puzzle => "Win a compact field within six turns.", GameMode.Survival => "Hold the ridge through a hostile wave.", GameMode.BossRush => "Break the Stone Brute formation.", GameMode.Custom => "Generate a fresh personal field seed.", GameMode.Training => "Practice routes, targets, and turn timing.", GameMode.Tutorial => "A guided opening field for new players.", GameMode.Endless => "Continue to a new field after every victory.", _ => "Open a tactical field." };
     private static string FormatReplayAction(TacticalAction action) => $"T{action.Turn} · {action.ActorId} · {action.Type}" + (action.Target is { } target ? $" → {target}" : string.Empty) + (action.AbilityId is { } ability ? $" · {ability}" : string.Empty);
+    private string BuildReplayShortcutLegend()
+    {
+        var bindings = _services.SaveData.Accessibility.ReplayKeyBindings;
+        var next = bindings.Get(ReplayInspectorShortcut.Next) == "Right" ? "Right/Space" : bindings.Get(ReplayInspectorShortcut.Next);
+        return $"KEYS · {bindings.Get(ReplayInspectorShortcut.Previous)}/{next} step · {bindings.Get(ReplayInspectorShortcut.Start)}/{bindings.Get(ReplayInspectorShortcut.End)} jump · {bindings.Get(ReplayInspectorShortcut.PlayToEnd)} play";
+    }
 }

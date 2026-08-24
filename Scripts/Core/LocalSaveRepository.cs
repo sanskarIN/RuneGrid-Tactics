@@ -33,6 +33,7 @@ public sealed class AccessibilitySettings
     public bool Vibration { get; set; }
     public bool ConfirmActions { get; set; }
     public string Handedness { get; set; } = "right";
+    public ReplayInspectorKeyBindings ReplayKeyBindings { get; set; } = ReplayInspectorKeyBindings.CreateDefault();
 }
 
 public sealed class PlayerProfile
