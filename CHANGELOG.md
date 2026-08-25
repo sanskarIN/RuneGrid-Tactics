@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.10-replay-mismatch-warnings] — 2026-08-24
+
+### Added
+
+Added contextual **REPLAY DETERMINISM WARNING** tooltips to the replay inspector. A warning appears when expected and visible state diverge, identifies the first difference and action position, directs players to the audit panel, and offers shortcut reference access without blocking playback.
+
+### Validation
+
+Added deterministic mismatch-signature acknowledgement coverage. Native validation now requires warning-state tracking, mismatch summary contracts, warning tooltip composition, audit guidance, acknowledgement, and shortcut-reference routing.
+
 ## [0.3.9-replay-onboarding] — 2026-08-24
 
 ### Added

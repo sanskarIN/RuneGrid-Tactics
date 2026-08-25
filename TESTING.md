@@ -37,6 +37,7 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | Configurable replay keys | Local binding assignments serialize with the player record, resolve custom commands deterministically, reject duplicate or unsupported keys, normalize malformed imported assignments, and restore safe defaults. |
 | Shortcut reference overlay | A framework-independent reference builder lists the active saved bindings in a stable previous, next, opening, final, and play-to-end order; the native inspector presents it through the F1 command and a dismissible overlay. |
 | First-time inspector onboarding | The local onboarding state begins visible, serializes with the player record, and remains dismissed after the player acknowledges the inspector introduction or opens the shortcut reference. |
+| Determinism mismatch warnings | A mismatch warning key includes action position and both fingerprints, so acknowledgement persists only for the exact observed divergence while changed action positions or state signatures warn again. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
 
@@ -55,3 +56,5 @@ The **REPLAY INSPECTOR KEYS** settings panel stores a local binding per replay c
 The replay inspector exposes the active-binding reference with **F1** and the **KEYS · F1** command-table button. The overlay consumes keyboard input so viewing the reference cannot accidentally move the replay. It displays the current local binding beside every replay command and closes only through **F1**, **Escape**, or its explicit close control.
 
 On first opening an archived replay, the inspector presents a compact **INTRODUCING REPLAY INSPECTOR** tooltip. It explains exact-state reconstruction, offers a direct **VIEW SHORTCUTS** route to the reference overlay, and a **GOT IT** acknowledgement. Either action records the local onboarding dismissal; existing and imported player records receive a safe default onboarding state when the record is loaded.
+
+When the expected and visible snapshots differ, the inspector displays a non-blocking **REPLAY DETERMINISM WARNING**. It exposes the first human-readable difference, points to the persistent **DETERMINISM AUDIT** panel, and offers shortcut help without preventing playback interaction. Acknowledgement is keyed to the current action index plus expected and current fingerprints, preventing duplicate notices for the same state while preserving warnings for new divergences.

@@ -45,6 +45,8 @@ While viewing a replay, press **F1** or select **KEYS · F1** to open the in-gam
 
 On the first replay inspection, a local **INTRODUCING REPLAY INSPECTOR** tooltip explains deterministic action review and points directly to **VIEW SHORTCUTS** and **F1**. Selecting **GOT IT** or **VIEW SHORTCUTS** marks the guidance as seen in the local record, so it does not reappear on later inspector sessions.
 
+If the replay inspector’s expected reconstruction differs from the visible playback state, it presents a non-blocking **REPLAY DETERMINISM WARNING**. The tooltip identifies the action position and first detected difference, directs the player to **DETERMINISM AUDIT**, and offers **VIEW SHORTCUTS** for safe navigation. Dismissing a warning acknowledges only that exact action and fingerprint signature; a changed mismatch remains visible.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status
