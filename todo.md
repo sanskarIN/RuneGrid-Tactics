@@ -39,3 +39,6 @@
 - [x] Add a persistent first-time replay inspector onboarding state with safe migration behavior.
 - [x] Add a clear dismissible inspector tooltip introducing inspection and the shortcut reference.
 - [x] Add onboarding validation, tests, documentation, and GitHub synchronization for the native update.
+- [x] Add replay mismatch warning state that identifies newly detected determinism audit divergence.
+- [x] Add a contextual dismissible inspector warning tooltip with audit and shortcut-reference guidance.
+- [x] Add mismatch-warning validation, tests, documentation, and GitHub synchronization for the native update.

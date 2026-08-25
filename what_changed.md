@@ -153,3 +153,16 @@
 | Dismissal | **GOT IT** and **VIEW SHORTCUTS** both persist acknowledgement. The former returns directly to inspection; the latter opens the existing active-binding reference overlay. |
 | Verification | Added framework-independent serialized onboarding lifecycle coverage; native validation now requires the state contract, tooltip, acknowledgement, and shortcut-reference entry route. Godot C# Release builds with zero warnings/errors and the native suite passes **32 tests, 0 failures**. |
 | GitHub | Pushed four focused onboarding, test, validation, and documentation commits ending at `73ae81a`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.10-replay-mismatch-warnings — Contextual determinism guidance
+
+**Date:** 2026-08-24
+
+| Area | Delivered change |
+| --- | --- |
+| Detection | The inspector now derives a mismatch signature from current action index plus expected/current fingerprints whenever the determinism audit detects a divergence. |
+| Contextual warning | Added a non-blocking **REPLAY DETERMINISM WARNING** tooltip with action position, the first human-readable difference, a pointer to **DETERMINISM AUDIT**, and a **VIEW SHORTCUTS** path. |
+| Acknowledgement | Dismissing a warning persists only the exact mismatch signature. A later changed action or fingerprint divergence still produces a new warning. |
+| Interaction safety | The tooltip uses pass-through input so it does not halt timeline controls; mismatch warnings take priority over first-time onboarding guidance. |
+| Verification | Added framework-independent mismatch-signature persistence coverage; native validation now requires warning state, summary contract, tooltip, audit guidance, acknowledgement, and shortcut-reference path. Godot C# Release builds with zero warnings/errors and the native suite passes **33 tests, 0 failures**. |
+| GitHub | Pushed four focused warning, test, validation, and documentation commits ending at `85f19de`, with repository-local author address `sanskarin@outlook.in`. |
