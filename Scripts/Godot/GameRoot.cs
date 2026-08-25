@@ -19,6 +19,7 @@ public partial class GameRoot : Node
     private string? _keyBindingNotice;
     private bool _showReplayShortcutOverlay;
     private bool _showReplayInspectorOnboarding;
+    private string? _activeMismatchWarningKey;
 
     public override void _Ready()
     {
@@ -300,6 +301,7 @@ public partial class GameRoot : Node
     private void OpenReplayInspector(ReplayRecord replay)
     {
         _showReplayShortcutOverlay = false;
+        _activeMismatchWarningKey = null;
         _replayInspector = _services.InspectReplay(replay);
         _showReplayInspectorOnboarding = _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowIntro;
         _replayInspector.Changed += ShowReplayInspector;
@@ -312,6 +314,8 @@ public partial class GameRoot : Node
         ReplaceScreen();
         var inspector = _replayInspector;
         var report = inspector.BuildReport();
+        var mismatchWarningKey = report.DeterminismDifference.IsMatch ? null : ReplayInspectorMismatchWarning.BuildKey(report.CurrentActionIndex, report.ExpectedFingerprint, report.CurrentFingerprint);
+        var showMismatchWarning = mismatchWarningKey is not null && _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowMismatchWarning(mismatchWarningKey);
         var root = MakeColumn(10); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 20);
         root.AddChild(MakeHeader("REPLAY INSPECTOR", $"{report.Record.Mode} · {report.Record.Seed} · action {report.CurrentActionIndex}/{report.ActionCount}", ShowReplays));
 
@@ -362,8 +366,38 @@ public partial class GameRoot : Node
         }
         root.AddChild(actions);
         _screen.AddChild(root);
-        if (_showReplayInspectorOnboarding) _screen.AddChild(BuildReplayInspectorOnboardingTooltip());
+        if (showMismatchWarning) _screen.AddChild(BuildReplayMismatchWarningTooltip(report, mismatchWarningKey!));
+        if (_showReplayInspectorOnboarding && !showMismatchWarning) _screen.AddChild(BuildReplayInspectorOnboardingTooltip());
         if (_showReplayShortcutOverlay) _screen.AddChild(BuildReplayShortcutReferenceOverlay());
+    }
+
+    private Control BuildReplayMismatchWarningTooltip(ReplayInspectorReport report, string warningKey)
+    {
+        _activeMismatchWarningKey = warningKey;
+        var tooltip = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Pass, TooltipText = "Replay determinism warning. The audit panel contains the complete state difference." };
+        tooltip.SetAnchorsPreset(Control.LayoutPreset.TopRight);
+        tooltip.Position = new Vector2(780, 92);
+        tooltip.Size = new Vector2(420, 230);
+        var style = new StyleBoxFlat { BgColor = new Color("4A2421"), BorderColor = new Color("F1A18D"), ContentMarginLeft = 18, ContentMarginRight = 18, ContentMarginTop = 15, ContentMarginBottom = 15 };
+        style.SetBorderWidthAll(2); tooltip.AddThemeStyleboxOverride("panel", style);
+        var content = MakeColumn(8); tooltip.AddChild(content);
+        content.AddChild(MakeLabel("REPLAY DETERMINISM WARNING", 18, new Color("F1A18D")));
+        content.AddChild(MakeLabel($"At action {report.CurrentActionIndex}, the visible playback no longer matches the seeded reconstruction.", 14, _parchment, wrap: true));
+        content.AddChild(MakeLabel($"FIRST DIFFERENCE · {ReplayInspectorMismatchWarning.Summarize(report.DeterminismDifference)}", 12, new Color("F6D5BF"), wrap: true));
+        content.AddChild(MakeLabel("Review DETERMINISM AUDIT for the full comparison, or open shortcut help to navigate safely.", 12, _parchment, wrap: true));
+        var actions = new HBoxContainer(); actions.AddThemeConstantOverride("separation", 8);
+        actions.AddChild(MakeButton("VIEW SHORTCUTS", () => { AcknowledgeReplayMismatchWarning(warningKey); _showReplayShortcutOverlay = true; ShowReplayInspector(); }));
+        actions.AddChild(MakeButton("DISMISS WARNING", () => AcknowledgeReplayMismatchWarning(warningKey), primary: true));
+        content.AddChild(actions);
+        return tooltip;
+    }
+
+    private void AcknowledgeReplayMismatchWarning(string warningKey)
+    {
+        _services.SaveData.Accessibility.ReplayInspectorOnboarding.AcknowledgeMismatchWarning(warningKey);
+        _activeMismatchWarningKey = null;
+        _services.Persist();
+        ShowReplayInspector();
     }
 
     private Control BuildReplayInspectorOnboardingTooltip()
