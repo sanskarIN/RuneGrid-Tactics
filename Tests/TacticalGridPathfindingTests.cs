@@ -533,6 +533,27 @@ public sealed class TacticalGridPathfindingTests
         Assert.False(restored.ShouldShowIntro);
     }
 
+    [Fact]
+    public void ReplayInspectorMismatchWarning_AcknowledgesOnlyTheExactReplayStateSignature()
+    {
+        var onboarding = new ReplayInspectorOnboarding();
+        var mismatch = ReplayInspectorMismatchWarning.BuildKey(2, "expected-fingerprint", "current-fingerprint");
+        var changedAction = ReplayInspectorMismatchWarning.BuildKey(3, "expected-fingerprint", "current-fingerprint");
+        var changedState = ReplayInspectorMismatchWarning.BuildKey(2, "expected-fingerprint", "different-current-fingerprint");
+
+        Assert.True(onboarding.ShouldShowMismatchWarning(mismatch));
+        onboarding.AcknowledgeMismatchWarning(mismatch);
+
+        Assert.False(onboarding.ShouldShowMismatchWarning(mismatch));
+        Assert.True(onboarding.ShouldShowMismatchWarning(changedAction));
+        Assert.True(onboarding.ShouldShowMismatchWarning(changedState));
+
+        var restored = JsonSerializer.Deserialize<ReplayInspectorOnboarding>(JsonSerializer.Serialize(onboarding));
+        Assert.NotNull(restored);
+        Assert.False(restored!.ShouldShowMismatchWarning(mismatch));
+        Assert.True(restored.ShouldShowMismatchWarning(changedState));
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
