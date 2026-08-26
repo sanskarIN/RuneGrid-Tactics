@@ -42,3 +42,6 @@
 - [x] Add replay mismatch warning state that identifies newly detected determinism audit divergence.
 - [x] Add a contextual dismissible inspector warning tooltip with audit and shortcut-reference guidance.
 - [x] Add mismatch-warning validation, tests, documentation, and GitHub synchronization for the native update.
+- [x] Add structured replay mismatch filters for phase, tile, unit, action, and all diff lines.
+- [x] Add filtered audit controls and visible affected-tile/unit board highlighting in the replay inspector.
+- [x] Add filtered-diff validation, tests, documentation, and GitHub synchronization for the native update.

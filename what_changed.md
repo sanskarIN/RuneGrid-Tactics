@@ -166,3 +166,16 @@
 | Interaction safety | The tooltip uses pass-through input so it does not halt timeline controls; mismatch warnings take priority over first-time onboarding guidance. |
 | Verification | Added framework-independent mismatch-signature persistence coverage; native validation now requires warning state, summary contract, tooltip, audit guidance, acknowledgement, and shortcut-reference path. Godot C# Release builds with zero warnings/errors and the native suite passes **33 tests, 0 failures**. |
 | GitHub | Pushed four focused warning, test, validation, and documentation commits ending at `85f19de`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.11-filtered-replay-diffs — Focused mismatch inspection
+
+**Date:** 2026-08-26
+
+| Area | Delivered change |
+| --- | --- |
+| Structured filter | Added framework-independent classification for replay differences: **All**, **Phase / state**, **Tile**, **Unit**, and **Action**. |
+| Affected entities | Tile entries parse canonical `x:y` coordinates and unit entries retain stable unit IDs, producing exact marker sets for the selected filter. |
+| Inspector controls | Added a category button group with per-category counts under **FILTERED DIFF · AFFECTED BOARD MARKERS**. The All filter retains the full human-readable audit. |
+| Board clarity | Selected mismatched tiles gain a warm inner border. Selected mismatched living units gain a delta ring and marker, without changing tactical selection or replay state. |
+| Verification | Added category isolation, marker extraction, and human-readable filtered output coverage; validator now requires the diff model, inspector route, and board markers. Godot C# Release builds with zero warnings/errors and the native suite passes **34 tests, 0 failures**. |
+| GitHub | Pushed four focused filtered-audit, test, validation, and documentation commits ending at `92638b7`, with repository-local author address `sanskarin@outlook.in`. |
