@@ -664,6 +664,29 @@ public sealed class TacticalGridPathfindingTests
         Assert.Equal("runegrid-replay-diff-training-field-seed-alpha-action-2-tile.csv", export.BuildFileName(".CSV"));
     }
 
+    [Fact]
+    public void ReplayMismatchAutoExport_DeduplicatesPersistedSignaturesAndBuildsDeterministicUserPaths()
+    {
+        var state = new ReplayMismatchAutoExportState();
+        const string signature = "action=2|expected=ABCD|actual=EFGH";
+        var export = new ReplayMismatchExport(1, "training-field", "seed-alpha", "Training", "Field", "2026-08-26T00:00:00.0000000Z", 2, 4, "All", "ABCD", "EFGH", false, Array.Empty<string>(), Array.Empty<string>(), Array.Empty<ReplayMismatchExportLine>());
+
+        Assert.False(state.HasExported(signature));
+        state.MarkExported(signature);
+        state.MarkExported(signature);
+        Assert.True(state.HasExported(signature));
+        Assert.False(state.HasExported("action=3|expected=ABCD|actual=EFGH"));
+
+        var path = ReplayMismatchAutoExport.BuildUserPath(export, signature);
+        Assert.StartsWith("user://auto-runegrid-replay-diff-training-field-seed-alpha-action-2-all-", path);
+        Assert.EndsWith(".json", path);
+        Assert.Equal(path, ReplayMismatchAutoExport.BuildUserPath(export, signature));
+
+        var restored = JsonSerializer.Deserialize<ReplayMismatchAutoExportState>(JsonSerializer.Serialize(state));
+        Assert.NotNull(restored);
+        Assert.True(restored!.HasExported(signature));
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
