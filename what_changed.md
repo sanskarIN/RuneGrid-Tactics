@@ -204,3 +204,15 @@
 | Visible guidance | Added a **1-5 DIRECT** audit caption and five exact command rows in the **FILTERED DIFF NAVIGATION** shortcut reference. |
 | Verification | Added framework-independent category mapping, alternate key-code, modifier rejection, unsupported-digit, and reference coverage; validator now requires the direct parser, inspector route, caption, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **36 tests, 0 failures**. |
 | GitHub | Pushed four focused direct-shortcut, test, validation, and documentation commits ending at `cd3e3f2`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.14-filtered-replay-export — Downloadable focused mismatch reports
+
+**Date:** 2026-08-26
+
+| Area | Delivered change |
+| --- | --- |
+| Export model | Added a deterministic portable filtered mismatch export with replay identity, current action, active filter, expected/current fingerprints, match flag, affected tiles/units, and focused difference lines. |
+| JSON and CSV | Added indented JSON for tooling and quote-safe CSV for spreadsheets. CSV repeats metadata per difference row and remains meaningful for empty focused filters. |
+| Native workflow | Added **EXPORT FILTER JSON** and **EXPORT FILTER CSV** audit buttons. Each opens a filesystem save dialog prefilled with a sanitized encounter, seed, action, and filter filename. |
+| Verification | Added JSON structure, CSV escaping, affected entity, and safe file-name coverage; validator now requires the export model, serializers, save-dialog route, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **37 tests, 0 failures**. |
+| GitHub | Pushed four focused export, test, validation, and documentation commits ending at `6618dc4`, with repository-local author address `sanskarin@outlook.in`. |

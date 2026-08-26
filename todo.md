@@ -51,3 +51,6 @@
 - [x] Add conflict-safe direct numeric keys for All, Phase/state, Tile, Unit, and Action replay diff filters.
 - [x] Surface direct numeric filter mappings in the inspector and shortcut reference without affecting replay timeline navigation.
 - [x] Add numeric filter shortcut validation, tests, documentation, and GitHub synchronization for the native update.
+- [x] Add a deterministic active filtered replay mismatch export model with safe JSON and CSV serialization.
+- [x] Add native replay-inspector JSON and CSV export controls with local file notifications.
+- [x] Add export validation, tests, documentation, and GitHub synchronization for the native update.
