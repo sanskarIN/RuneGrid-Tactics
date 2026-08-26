@@ -216,3 +216,16 @@
 | Native workflow | Added **EXPORT FILTER JSON** and **EXPORT FILTER CSV** audit buttons. Each opens a filesystem save dialog prefilled with a sanitized encounter, seed, action, and filter filename. |
 | Verification | Added JSON structure, CSV escaping, affected entity, and safe file-name coverage; validator now requires the export model, serializers, save-dialog route, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **37 tests, 0 failures**. |
 | GitHub | Pushed four focused export, test, validation, and documentation commits ending at `6618dc4`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.15-auto-replay-mismatch-export — Opt-in local diagnostic capture
+
+**Date:** 2026-08-26
+
+| Area | Delivered change |
+| --- | --- |
+| Local setting | Added an off-by-default **Automatically export replay mismatch reports** preference in Settings & Accessibility. Legacy or imported records normalize a missing auto-export state safely when the option is enabled. |
+| Automatic report | A new determinism mismatch now writes a full **All**-filter JSON report to local `user://` storage, preserving complete audit context rather than the temporary displayed category. |
+| Deduplication | Successful exports record a bounded persistent mismatch-signature set. Re-rendering or revisiting the same action/fingerprint divergence does not rewrite the file; a changed mismatch receives its own report. |
+| Feedback and recovery | The audit shows the resolved auto-export path after success, clears it for matching states, and reports write failures without marking the signature complete, allowing later retries. |
+| Verification | Added framework-independent deduplication, persistence, deterministic local-path, and repeatability coverage; validation now requires preference normalization, state contract, inspector route, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **38 tests, 0 failures**. |
+| GitHub | Pushed four focused auto-export, test, validation, and documentation commits ending at `1afed6b`, with repository-local author address `sanskarin@outlook.in`. |

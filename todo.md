@@ -54,3 +54,6 @@
 - [x] Add a deterministic active filtered replay mismatch export model with safe JSON and CSV serialization.
 - [x] Add native replay-inspector JSON and CSV export controls with local file notifications.
 - [x] Add export validation, tests, documentation, and GitHub synchronization for the native update.
+- [x] Add a persistent optional automatic replay mismatch export setting with safe legacy-record migration.
+- [x] Add deduplicated automatic JSON export and visible inspector notification for new mismatch signatures.
+- [x] Add automatic export validation, tests, documentation, and GitHub synchronization for the native update.
