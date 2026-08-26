@@ -601,8 +601,35 @@ public sealed class TacticalGridPathfindingTests
         Assert.False(ReplayDiffFilterNavigator.TryParseShortcut("F1", hasModifier: false, out _));
 
         var reference = ReplayDiffFilterShortcutReference.Build();
-        Assert.Equal(new[] { "F2", "F3" }, reference.Select(line => line.Binding));
+        Assert.Equal(new[] { "F2", "F3" }, reference.Take(2).Select(line => line.Binding));
         Assert.Contains("prior focused mismatch category", reference[0].Description);
+    }
+
+    [Fact]
+    public void ReplayDiffFilterNavigator_SelectsExactCategoriesFromReservedNumericKeys()
+    {
+        var expected = new Dictionary<string, ReplayDiffCategory>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["1"] = ReplayDiffCategory.All,
+            ["Key2"] = ReplayDiffCategory.Phase,
+            ["D3"] = ReplayDiffCategory.Tile,
+            ["Kp4"] = ReplayDiffCategory.Unit,
+            ["5"] = ReplayDiffCategory.Action
+        };
+
+        foreach (var entry in expected)
+        {
+            Assert.True(ReplayDiffFilterNavigator.TryParseDirectShortcut(entry.Key, hasModifier: false, out var category));
+            Assert.Equal(entry.Value, category);
+        }
+
+        Assert.False(ReplayDiffFilterNavigator.TryParseDirectShortcut("1", hasModifier: true, out _));
+        Assert.False(ReplayDiffFilterNavigator.TryParseDirectShortcut("0", hasModifier: false, out _));
+        Assert.False(ReplayDiffFilterNavigator.TryParseDirectShortcut("F2", hasModifier: false, out _));
+
+        var reference = ReplayDiffFilterShortcutReference.Build();
+        Assert.Equal(new[] { "1", "2", "3", "4", "5" }, reference.Skip(2).Select(line => line.Binding));
+        Assert.Contains("full audit", reference[2].Description);
     }
 
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
