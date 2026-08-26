@@ -583,6 +583,28 @@ public sealed class TacticalGridPathfindingTests
         Assert.Equal("Phase / state", ReplayDiffFilter.LabelFor(ReplayDiffCategory.Phase));
     }
 
+    [Fact]
+    public void ReplayDiffFilterNavigator_CyclesReservedFiltersWithoutTimelineBindingConflicts()
+    {
+        Assert.Equal(ReplayDiffCategory.Phase, ReplayDiffFilterNavigator.Next(ReplayDiffCategory.All));
+        Assert.Equal(ReplayDiffCategory.Tile, ReplayDiffFilterNavigator.Next(ReplayDiffCategory.Phase));
+        Assert.Equal(ReplayDiffCategory.Unit, ReplayDiffFilterNavigator.Next(ReplayDiffCategory.Tile));
+        Assert.Equal(ReplayDiffCategory.Action, ReplayDiffFilterNavigator.Next(ReplayDiffCategory.Unit));
+        Assert.Equal(ReplayDiffCategory.All, ReplayDiffFilterNavigator.Next(ReplayDiffCategory.Action));
+        Assert.Equal(ReplayDiffCategory.Action, ReplayDiffFilterNavigator.Previous(ReplayDiffCategory.All));
+
+        Assert.True(ReplayDiffFilterNavigator.TryParseShortcut("F2", hasModifier: false, out var previous));
+        Assert.Equal(ReplayDiffFilterShortcut.Previous, previous);
+        Assert.True(ReplayDiffFilterNavigator.TryParseShortcut("f3", hasModifier: false, out var next));
+        Assert.Equal(ReplayDiffFilterShortcut.Next, next);
+        Assert.False(ReplayDiffFilterNavigator.TryParseShortcut("F2", hasModifier: true, out _));
+        Assert.False(ReplayDiffFilterNavigator.TryParseShortcut("F1", hasModifier: false, out _));
+
+        var reference = ReplayDiffFilterShortcutReference.Build();
+        Assert.Equal(new[] { "F2", "F3" }, reference.Select(line => line.Binding));
+        Assert.Contains("prior focused mismatch category", reference[0].Description);
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
