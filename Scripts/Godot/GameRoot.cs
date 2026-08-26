@@ -382,6 +382,10 @@ public partial class GameRoot : Node
             filters.AddChild(filter);
         }
         audit.AddChild(filters);
+        var export = new HBoxContainer(); export.AddThemeConstantOverride("separation", 6);
+        var jsonExport = MakeButton("EXPORT FILTER JSON", () => ExportFilteredReplayMismatch(report, filteredDiff, "json")); jsonExport.TooltipText = "Save the active filtered replay mismatch report as JSON."; export.AddChild(jsonExport);
+        var csvExport = MakeButton("EXPORT FILTER CSV", () => ExportFilteredReplayMismatch(report, filteredDiff, "csv")); csvExport.TooltipText = "Save the active filtered replay mismatch report as CSV."; export.AddChild(csvExport);
+        audit.AddChild(export);
         audit.AddChild(MakeLabel(filteredDiff.HasEntries ? filteredDiff.ToHumanReadable() : report.DeterminismDifference.IsMatch ? "No mismatched tiles or units are present." : $"No {ReplayDiffFilter.LabelFor(_replayDiffCategory).ToLowerInvariant()} mismatches are present.", 12, filteredDiff.HasEntries ? _parchment : new Color("A9D9B3"), wrap: true, expand: true));
         audit.AddChild(MakeLabel("DELTA FROM INITIAL", 15, new Color("D4BF7E")));
         audit.AddChild(MakeLabel(report.DifferenceFromInitial.ToHumanReadable(), 12, _parchment, wrap: true, expand: true));
@@ -536,6 +540,36 @@ public partial class GameRoot : Node
         using var file = GodotFileAccess.Open(path, GodotFileAccess.ModeFlags.Write);
         file.StoreString(_services.Saves.Export(_services.SaveData));
         ShowMessage("Local record exported", $"A validated field record was written to {ProjectSettings.GlobalizePath(path)}.", ShowSettings);
+    }
+
+    private void ExportFilteredReplayMismatch(ReplayInspectorReport report, ReplayDiffFilterResult filteredDiff, string extension)
+    {
+        var export = ReplayMismatchExportBuilder.Build(report, filteredDiff);
+        var dialog = new FileDialog
+        {
+            FileMode = FileDialog.FileModeEnum.SaveFile,
+            Access = FileDialog.AccessEnum.Filesystem,
+            CurrentFile = export.BuildFileName(extension),
+            Filters = extension.Equals("csv", StringComparison.OrdinalIgnoreCase)
+                ? new[] { "*.csv ; Filtered replay mismatch CSV" }
+                : new[] { "*.json ; Filtered replay mismatch JSON" }
+        };
+        dialog.FileSelected += path =>
+        {
+            try
+            {
+                using var file = GodotFileAccess.Open(path, GodotFileAccess.ModeFlags.Write);
+                file.StoreString(extension.Equals("csv", StringComparison.OrdinalIgnoreCase) ? export.ToCsv() : export.ToJson());
+                ShowMessage("Filtered mismatch report exported", $"The {ReplayDiffFilter.LabelFor(filteredDiff.Category)} replay audit was written to {path}.", ShowReplayInspector);
+            }
+            catch (Exception)
+            {
+                ShowMessage("Export failed", "The selected location could not receive the filtered replay mismatch report.", ShowReplayInspector);
+            }
+            finally { dialog.QueueFree(); }
+        };
+        AddChild(dialog);
+        dialog.PopupCentered(new Vector2I(760, 500));
     }
 
     private void ImportLocalRecord()
