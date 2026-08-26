@@ -25,5 +25,6 @@
     <Compile Include="../Scripts/Core/ReplayInspector.cs" Link="Core/ReplayInspector.cs" />
     <Compile Include="../Scripts/Core/ReplayInspectorShortcuts.cs" Link="Core/ReplayInspectorShortcuts.cs" />
     <Compile Include="../Scripts/Core/ReplayInspectorOnboarding.cs" Link="Core/ReplayInspectorOnboarding.cs" />
+    <Compile Include="../Scripts/Core/ReplayDiffFilter.cs" Link="Core/ReplayDiffFilter.cs" />
   </ItemGroup>
 </Project>

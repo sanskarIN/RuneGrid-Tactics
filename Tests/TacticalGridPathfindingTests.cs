@@ -554,6 +554,35 @@ public sealed class TacticalGridPathfindingTests
         Assert.True(restored.ShouldShowMismatchWarning(changedState));
     }
 
+    [Fact]
+    public void ReplayDiffFilter_IsolatesCategoriesAndExtractsAffectedTileAndUnitMarkers()
+    {
+        var difference = new ReplayStateDiff(new[]
+        {
+            "phase: expected Player, actual Enemy",
+            "tile 2:3: expected [kind=Floor], actual [kind=Hazard]",
+            "unit vanguard-1: expected [health=12], actual [health=8]",
+            "action[1]: expected [turn=1], actual [turn=2]"
+        });
+
+        var all = ReplayDiffFilter.Filter(difference, ReplayDiffCategory.All);
+        var phases = ReplayDiffFilter.Filter(difference, ReplayDiffCategory.Phase);
+        var tiles = ReplayDiffFilter.Filter(difference, ReplayDiffCategory.Tile);
+        var units = ReplayDiffFilter.Filter(difference, ReplayDiffCategory.Unit);
+        var actions = ReplayDiffFilter.Filter(difference, ReplayDiffCategory.Action);
+
+        Assert.Equal(4, all.Entries.Count);
+        Assert.Single(phases.Entries);
+        Assert.Single(tiles.Entries);
+        Assert.Single(units.Entries);
+        Assert.Single(actions.Entries);
+        Assert.Contains(new GridPoint(2, 3), tiles.AffectedTiles);
+        Assert.Contains("vanguard-1", units.AffectedUnitIds);
+        Assert.Empty(tiles.AffectedUnitIds);
+        Assert.Contains("TILE · tile 2:3", tiles.ToHumanReadable());
+        Assert.Equal("Phase / state", ReplayDiffFilter.LabelFor(ReplayDiffCategory.Phase));
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
