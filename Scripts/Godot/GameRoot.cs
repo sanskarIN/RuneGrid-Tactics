@@ -20,6 +20,7 @@ public partial class GameRoot : Node
     private bool _showReplayShortcutOverlay;
     private bool _showReplayInspectorOnboarding;
     private string? _activeMismatchWarningKey;
+    private ReplayDiffCategory _replayDiffCategory = ReplayDiffCategory.All;
 
     public override void _Ready()
     {
@@ -302,6 +303,7 @@ public partial class GameRoot : Node
     {
         _showReplayShortcutOverlay = false;
         _activeMismatchWarningKey = null;
+        _replayDiffCategory = ReplayDiffCategory.All;
         _replayInspector = _services.InspectReplay(replay);
         _showReplayInspectorOnboarding = _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowIntro;
         _replayInspector.Changed += ShowReplayInspector;
@@ -314,6 +316,7 @@ public partial class GameRoot : Node
         ReplaceScreen();
         var inspector = _replayInspector;
         var report = inspector.BuildReport();
+        var filteredDiff = ReplayDiffFilter.Filter(report.DeterminismDifference, _replayDiffCategory);
         var mismatchWarningKey = report.DeterminismDifference.IsMatch ? null : ReplayInspectorMismatchWarning.BuildKey(report.CurrentActionIndex, report.ExpectedFingerprint, report.CurrentFingerprint);
         var showMismatchWarning = mismatchWarningKey is not null && _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowMismatchWarning(mismatchWarningKey);
         var root = MakeColumn(10); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 20);
@@ -345,11 +348,25 @@ public partial class GameRoot : Node
         archive.AddChild(MakeLabel($"CURRENT FINGERPRINT\n{report.CurrentFingerprint}\n\nEXPECTED FINGERPRINT\n{report.ExpectedFingerprint}", 13, new Color("D4BF7E"), wrap: true));
         body.AddChild(archive);
 
-        var board = new BoardView { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ExpandFill }; board.Bind(inspector.Player.Session); body.AddChild(board);
+        var board = new BoardView { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ExpandFill };
+        board.Bind(inspector.Player.Session);
+        board.SetReplayDiffMarkers(filteredDiff.AffectedTiles, filteredDiff.AffectedUnitIds);
+        body.AddChild(board);
 
         var audit = MakeColumn(8); audit.CustomMinimumSize = new Vector2(330, 0);
         audit.AddChild(MakeLabel("DETERMINISM AUDIT", 15, _route));
-        audit.AddChild(MakeLabel(report.DeterminismDifference.IsMatch ? "MATCH · reconstructed state equals live replay." : report.DeterminismDifference.ToHumanReadable(), 13, report.DeterminismDifference.IsMatch ? new Color("A9D9B3") : new Color("F1A18D"), wrap: true));
+        audit.AddChild(MakeLabel(report.DeterminismDifference.IsMatch ? "MATCH · reconstructed state equals live replay." : $"MISMATCH · {report.DeterminismDifference.Lines.Count} difference(s). Choose a filter to focus the audit and board markers.", 13, report.DeterminismDifference.IsMatch ? new Color("A9D9B3") : new Color("F1A18D"), wrap: true));
+        audit.AddChild(MakeLabel("FILTERED DIFF · AFFECTED BOARD MARKERS", 12, new Color("D4BF7E")));
+        var filters = new GridContainer { Columns = 3 }; filters.AddThemeConstantOverride("h_separation", 5); filters.AddThemeConstantOverride("v_separation", 5);
+        foreach (var category in Enum.GetValues<ReplayDiffCategory>())
+        {
+            var filter = MakeButton($"{ReplayDiffFilter.LabelFor(category).ToUpperInvariant()} · {ReplayDiffFilter.Filter(report.DeterminismDifference, category).Entries.Count}", () => { _replayDiffCategory = category; ShowReplayInspector(); }, primary: _replayDiffCategory == category);
+            filter.AddThemeFontSizeOverride("font_size", 10);
+            filter.TooltipText = "Filters diff lines and board markers to this mismatch category.";
+            filters.AddChild(filter);
+        }
+        audit.AddChild(filters);
+        audit.AddChild(MakeLabel(filteredDiff.HasEntries ? filteredDiff.ToHumanReadable() : report.DeterminismDifference.IsMatch ? "No mismatched tiles or units are present." : $"No {ReplayDiffFilter.LabelFor(_replayDiffCategory).ToLowerInvariant()} mismatches are present.", 12, filteredDiff.HasEntries ? _parchment : new Color("A9D9B3"), wrap: true, expand: true));
         audit.AddChild(MakeLabel("DELTA FROM INITIAL", 15, new Color("D4BF7E")));
         audit.AddChild(MakeLabel(report.DifferenceFromInitial.ToHumanReadable(), 12, _parchment, wrap: true, expand: true));
         if (report.IsInvalid) audit.AddChild(MakeLabel($"REPLAY REJECTED\n{report.Error}", 13, new Color("F1A18D"), wrap: true));
