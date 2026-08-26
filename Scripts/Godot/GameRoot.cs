@@ -84,6 +84,15 @@ public partial class GameRoot : Node
             GetViewport().SetInputAsHandled();
             return;
         }
+        if (ReplayDiffFilterNavigator.TryParseShortcut(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var diffFilterShortcut))
+        {
+            _replayDiffCategory = diffFilterShortcut == ReplayDiffFilterShortcut.Previous
+                ? ReplayDiffFilterNavigator.Previous(_replayDiffCategory)
+                : ReplayDiffFilterNavigator.Next(_replayDiffCategory);
+            ShowReplayInspector();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
         if (!_services.SaveData.Accessibility.ReplayKeyBindings.TryResolve(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var shortcut)) return;
 
         switch (shortcut)
@@ -356,7 +365,7 @@ public partial class GameRoot : Node
         var audit = MakeColumn(8); audit.CustomMinimumSize = new Vector2(330, 0);
         audit.AddChild(MakeLabel("DETERMINISM AUDIT", 15, _route));
         audit.AddChild(MakeLabel(report.DeterminismDifference.IsMatch ? "MATCH · reconstructed state equals live replay." : $"MISMATCH · {report.DeterminismDifference.Lines.Count} difference(s). Choose a filter to focus the audit and board markers.", 13, report.DeterminismDifference.IsMatch ? new Color("A9D9B3") : new Color("F1A18D"), wrap: true));
-        audit.AddChild(MakeLabel("FILTERED DIFF · AFFECTED BOARD MARKERS", 12, new Color("D4BF7E")));
+        audit.AddChild(MakeLabel($"FILTERED DIFF · AFFECTED BOARD MARKERS · F2/F3 CYCLE · {ReplayDiffFilter.LabelFor(_replayDiffCategory).ToUpperInvariant()}", 12, new Color("D4BF7E")));
         var filters = new GridContainer { Columns = 3 }; filters.AddThemeConstantOverride("h_separation", 5); filters.AddThemeConstantOverride("v_separation", 5);
         foreach (var category in Enum.GetValues<ReplayDiffCategory>())
         {
@@ -453,6 +462,15 @@ public partial class GameRoot : Node
         content.AddChild(MakeLabel("SHORTCUT REFERENCE", 28, _route));
         content.AddChild(MakeLabel("ACTIVE REPLAY INSPECTOR BINDINGS", 13, new Color("D4BF7E")));
         foreach (var line in ReplayInspectorShortcutReference.Build(_services.SaveData.Accessibility.ReplayKeyBindings))
+        {
+            var row = new HBoxContainer(); row.AddThemeConstantOverride("separation", 12);
+            row.AddChild(MakeLabel(line.Command, 16, _parchment, expand: true));
+            row.AddChild(MakeLabel(line.Description, 12, new Color("AEB6AC"), expand: true));
+            row.AddChild(MakeLabel(line.Binding, 15, _route));
+            content.AddChild(row);
+        }
+        content.AddChild(MakeLabel("FILTERED DIFF NAVIGATION", 13, new Color("D4BF7E")));
+        foreach (var line in ReplayDiffFilterShortcutReference.Build())
         {
             var row = new HBoxContainer(); row.AddThemeConstantOverride("separation", 12);
             row.AddChild(MakeLabel(line.Command, 16, _parchment, expand: true));
