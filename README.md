@@ -51,6 +51,8 @@ The **DETERMINISM AUDIT** now includes a **FILTERED DIFF · AFFECTED BOARD MARKE
 
 During replay inspection, use **F2** for the previous diff filter and **F3** for the next one. These reserved commands cycle through All, Phase / state, Tile, Unit, and Action, wrap at both ends, and remain separate from configurable timeline navigation bindings. The shortcut reference lists both commands under **FILTERED DIFF NAVIGATION**.
 
+For direct selection, press **1** for All, **2** for Phase / state, **3** for Tile, **4** for Unit, or **5** for Action. These reserved numeric keys work from the replay inspector without moving focus, support standard and keypad key-code forms, and are ignored when combined with modifiers or while entering text.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status

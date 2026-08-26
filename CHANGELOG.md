@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.13-direct-replay-diff-filters] — 2026-08-26
+
+### Added
+
+Added direct replay diff filter selection: **1** selects All, **2** Phase / state, **3** Tile, **4** Unit, and **5** Action. The inspector highlights the numeric route in its audit heading, and the shortcut reference now includes all five exact mappings.
+
+### Validation
+
+Added deterministic numeric mapping, alternate key-code form, modifier rejection, invalid digit rejection, and reference coverage. Native validation now requires the direct parser, inspector route, active caption, and named scenario.
+
 ## [0.3.12-replay-diff-filter-shortcuts] — 2026-08-26
 
 ### Added
