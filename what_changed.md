@@ -192,3 +192,15 @@
 | Input safety | Filter cycling occurs after text-entry and reference-overlay guards, before customizable timeline binding resolution, so keyboard intent remains deterministic. |
 | Verification | Added framework-independent forward/backward cycle, shortcut parsing, modifier rejection, and reference coverage; validator now requires the navigator, inspector route, active caption, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **35 tests, 0 failures**. |
 | GitHub | Pushed four focused shortcut, test, validation, and documentation commits ending at `fd1dba7`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.13-direct-replay-diff-filters — Direct numeric filter selection
+
+**Date:** 2026-08-26
+
+| Area | Delivered change |
+| --- | --- |
+| Direct mappings | Added **1** for All, **2** for Phase / state, **3** for Tile, **4** for Unit, and **5** for Action. The parser accepts standard, `Key`, digit, and keypad key-code naming forms. |
+| Input safety | Direct numeric selection requires an unmodified key, happens after F2/F3 cycle handling and before configurable timeline key resolution, and does not move focus or replay position. |
+| Visible guidance | Added a **1-5 DIRECT** audit caption and five exact command rows in the **FILTERED DIFF NAVIGATION** shortcut reference. |
+| Verification | Added framework-independent category mapping, alternate key-code, modifier rejection, unsupported-digit, and reference coverage; validator now requires the direct parser, inspector route, caption, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **36 tests, 0 failures**. |
+| GitHub | Pushed four focused direct-shortcut, test, validation, and documentation commits ending at `cd3e3f2`, with repository-local author address `sanskarin@outlook.in`. |

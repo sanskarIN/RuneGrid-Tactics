@@ -48,3 +48,6 @@
 - [x] Add conflict-safe keyboard commands to move to the previous and next replay diff filter category.
 - [x] Surface diff-filter shortcuts in the inspector and shortcut reference without affecting timeline navigation.
 - [x] Add diff-filter keyboard validation, tests, documentation, and GitHub synchronization for the native update.
+- [x] Add conflict-safe direct numeric keys for All, Phase/state, Tile, Unit, and Action replay diff filters.
+- [x] Surface direct numeric filter mappings in the inspector and shortcut reference without affecting replay timeline navigation.
+- [x] Add numeric filter shortcut validation, tests, documentation, and GitHub synchronization for the native update.
