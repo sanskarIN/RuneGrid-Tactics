@@ -82,3 +82,30 @@ public static class ReplayMismatchExportBuilder
         AffectedUnits: filteredDiff.AffectedUnitIds.OrderBy(id => id, StringComparer.Ordinal).ToList(),
         Differences: filteredDiff.Entries.Select(entry => new ReplayMismatchExportLine(ReplayDiffFilter.LabelFor(entry.Category), entry.Line)).ToList());
 }
+
+/// <summary>Bounded local record of mismatch signatures already written by automatic export.</summary>
+public sealed class ReplayMismatchAutoExportState
+{
+    private const int MaximumSignatures = 64;
+    public List<string> ExportedMismatchSignatures { get; set; } = [];
+
+    public bool HasExported(string? signature) => !string.IsNullOrWhiteSpace(signature) && ExportedMismatchSignatures.Contains(signature, StringComparer.Ordinal);
+
+    public void MarkExported(string signature)
+    {
+        if (string.IsNullOrWhiteSpace(signature) || HasExported(signature)) return;
+        ExportedMismatchSignatures.Add(signature);
+        if (ExportedMismatchSignatures.Count > MaximumSignatures) ExportedMismatchSignatures.RemoveRange(0, ExportedMismatchSignatures.Count - MaximumSignatures);
+    }
+}
+
+public static class ReplayMismatchAutoExport
+{
+    public static string BuildUserPath(ReplayMismatchExport export, string mismatchSignature)
+    {
+        var name = export.BuildFileName("json");
+        var stem = name.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ? name[..^5] : name;
+        var signatureHash = DeterministicRandom.Hash(mismatchSignature).ToString("X8").ToLowerInvariant();
+        return $"user://auto-{stem}-{signatureHash}.json";
+    }
+}

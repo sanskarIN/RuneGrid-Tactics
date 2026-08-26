@@ -35,6 +35,10 @@ public sealed class AccessibilitySettings
     public string Handedness { get; set; } = "right";
     public ReplayInspectorKeyBindings ReplayKeyBindings { get; set; } = ReplayInspectorKeyBindings.CreateDefault();
     public ReplayInspectorOnboarding ReplayInspectorOnboarding { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool AutoExportReplayMismatchReports { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ReplayMismatchAutoExportState? ReplayMismatchAutoExport { get; set; }
 }
 
 public sealed class PlayerProfile

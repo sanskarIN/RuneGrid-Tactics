@@ -21,6 +21,7 @@ public partial class GameRoot : Node
     private bool _showReplayInspectorOnboarding;
     private string? _activeMismatchWarningKey;
     private ReplayDiffCategory _replayDiffCategory = ReplayDiffCategory.All;
+    private string? _replayAutoExportNotice;
 
     public override void _Ready()
     {
@@ -320,6 +321,7 @@ public partial class GameRoot : Node
         _showReplayShortcutOverlay = false;
         _activeMismatchWarningKey = null;
         _replayDiffCategory = ReplayDiffCategory.All;
+        _replayAutoExportNotice = null;
         _replayInspector = _services.InspectReplay(replay);
         _showReplayInspectorOnboarding = _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowIntro;
         _replayInspector.Changed += ShowReplayInspector;
@@ -334,6 +336,7 @@ public partial class GameRoot : Node
         var report = inspector.BuildReport();
         var filteredDiff = ReplayDiffFilter.Filter(report.DeterminismDifference, _replayDiffCategory);
         var mismatchWarningKey = report.DeterminismDifference.IsMatch ? null : ReplayInspectorMismatchWarning.BuildKey(report.CurrentActionIndex, report.ExpectedFingerprint, report.CurrentFingerprint);
+        TryAutoExportReplayMismatch(report, mismatchWarningKey);
         var showMismatchWarning = mismatchWarningKey is not null && _services.SaveData.Accessibility.ReplayInspectorOnboarding.ShouldShowMismatchWarning(mismatchWarningKey);
         var root = MakeColumn(10); root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize, 20);
         root.AddChild(MakeHeader("REPLAY INSPECTOR", $"{report.Record.Mode} · {report.Record.Seed} · action {report.CurrentActionIndex}/{report.ActionCount}", ShowReplays));
@@ -386,6 +389,7 @@ public partial class GameRoot : Node
         var jsonExport = MakeButton("EXPORT FILTER JSON", () => ExportFilteredReplayMismatch(report, filteredDiff, "json")); jsonExport.TooltipText = "Save the active filtered replay mismatch report as JSON."; export.AddChild(jsonExport);
         var csvExport = MakeButton("EXPORT FILTER CSV", () => ExportFilteredReplayMismatch(report, filteredDiff, "csv")); csvExport.TooltipText = "Save the active filtered replay mismatch report as CSV."; export.AddChild(csvExport);
         audit.AddChild(export);
+        if (!string.IsNullOrWhiteSpace(_replayAutoExportNotice)) audit.AddChild(MakeLabel(_replayAutoExportNotice, 11, new Color("D4BF7E"), wrap: true));
         audit.AddChild(MakeLabel(filteredDiff.HasEntries ? filteredDiff.ToHumanReadable() : report.DeterminismDifference.IsMatch ? "No mismatched tiles or units are present." : $"No {ReplayDiffFilter.LabelFor(_replayDiffCategory).ToLowerInvariant()} mismatches are present.", 12, filteredDiff.HasEntries ? _parchment : new Color("A9D9B3"), wrap: true, expand: true));
         audit.AddChild(MakeLabel("DELTA FROM INITIAL", 15, new Color("D4BF7E")));
         audit.AddChild(MakeLabel(report.DifferenceFromInitial.ToHumanReadable(), 12, _parchment, wrap: true, expand: true));
@@ -511,6 +515,13 @@ public partial class GameRoot : Node
         root.AddChild(MakeToggle("Reduced flashing", settings.ReducedFlashing, value => { settings.ReducedFlashing = value; _services.Persist(); }));
         root.AddChild(MakeToggle("Vibration (on compatible mobile exports)", settings.Vibration, value => { settings.Vibration = value; _services.Persist(); }));
         root.AddChild(MakeToggle("Require tactical action confirmation", settings.ConfirmActions, value => { settings.ConfirmActions = value; _services.Persist(); }));
+        root.AddChild(MakeToggle("Automatically export replay mismatch reports", settings.AutoExportReplayMismatchReports, value =>
+        {
+            settings.AutoExportReplayMismatchReports = value;
+            if (value) settings.ReplayMismatchAutoExport ??= new ReplayMismatchAutoExportState();
+            _services.Persist();
+            ShowSettings();
+        }));
         root.AddChild(MakeButton($"Text scale: {settings.TextScale}", () => { settings.TextScale = settings.TextScale == "standard" ? "large" : settings.TextScale == "large" ? "x-large" : "standard"; _services.Persist(); ShowSettings(); }));
         root.AddChild(MakeLabel("REPLAY INSPECTOR KEYS", 17, _route));
         root.AddChild(MakeLabel(_bindingCapture is { } awaiting ? $"Press one unmodified key for {ReplayInspectorKeyBindings.LabelFor(awaiting)}. Supported: A–Z, arrows, Space, Home, End, Page Up, Page Down. Escape cancels." : "Select a command, then press one supported key. Every command must keep a distinct key.", 13, _parchment, wrap: true));
@@ -570,6 +581,32 @@ public partial class GameRoot : Node
         };
         AddChild(dialog);
         dialog.PopupCentered(new Vector2I(760, 500));
+    }
+
+    private void TryAutoExportReplayMismatch(ReplayInspectorReport report, string? mismatchSignature)
+    {
+        var settings = _services.SaveData.Accessibility;
+        if (!settings.AutoExportReplayMismatchReports || string.IsNullOrWhiteSpace(mismatchSignature))
+        {
+            _replayAutoExportNotice = null;
+            return;
+        }
+        var state = settings.ReplayMismatchAutoExport ??= new ReplayMismatchAutoExportState();
+        if (state.HasExported(mismatchSignature)) return;
+        try
+        {
+            var export = ReplayMismatchExportBuilder.Build(report, ReplayDiffFilter.Filter(report.DeterminismDifference, ReplayDiffCategory.All));
+            var path = ReplayMismatchAutoExport.BuildUserPath(export, mismatchSignature);
+            using var file = GodotFileAccess.Open(path, GodotFileAccess.ModeFlags.Write);
+            file.StoreString(export.ToJson());
+            state.MarkExported(mismatchSignature);
+            _services.Persist();
+            _replayAutoExportNotice = $"AUTO-EXPORTED · {ProjectSettings.GlobalizePath(path)}";
+        }
+        catch (Exception)
+        {
+            _replayAutoExportNotice = "AUTO-EXPORT FAILED · The mismatch report could not be written to local storage.";
+        }
     }
 
     private void ImportLocalRecord()
