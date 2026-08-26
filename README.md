@@ -53,6 +53,8 @@ During replay inspection, use **F2** for the previous diff filter and **F3** for
 
 For direct selection, press **1** for All, **2** for Phase / state, **3** for Tile, **4** for Unit, or **5** for Action. These reserved numeric keys work from the replay inspector without moving focus, support standard and keypad key-code forms, and are ignored when combined with modifiers or while entering text.
 
+Use **EXPORT FILTER JSON** or **EXPORT FILTER CSV** in the replay audit to save the currently active filtered report through the native save dialog. Both formats include replay identity, action position, selected filter, expected/current fingerprints, match status, affected tiles and units, and exactly the filtered difference lines. JSON retains structured fields for tooling; CSV repeats the metadata per difference row for spreadsheet use. The default file name embeds the encounter, seed, action index, and active filter.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status

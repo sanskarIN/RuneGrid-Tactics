@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.14-filtered-replay-export] — 2026-08-26
+
+### Added
+
+Added native **EXPORT FILTER JSON** and **EXPORT FILTER CSV** controls to the replay determinism audit. Each action opens a save dialog and exports the currently active filter’s replay metadata, fingerprints, affected tiles/units, and focused diff lines with a safe descriptive default file name.
+
+### Validation
+
+Added deterministic JSON parsing, CSV quote escaping, focused metadata, and file-name sanitization coverage. Native validation now requires the export schema, serializer, save-dialog route, and named test scenario.
+
 ## [0.3.13-direct-replay-diff-filters] — 2026-08-26
 
 ### Added

@@ -41,6 +41,7 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | Filtered replay diffs | Stable replay diff lines classify as phase/state, tile, unit, or action records. Each filter returns only its category while extracting tile coordinates and unit identifiers for focused native board markers. |
 | Diff filter keyboard cycling | Reserved unmodified F2 and F3 keys cycle backward and forward through every diff category with wrapping; modifier combinations and unrelated keys are rejected so configurable timeline bindings remain unaffected. |
 | Direct numeric diff filters | Reserved unmodified 1–5 keys select All, Phase/state, Tile, Unit, and Action exactly. Standard, `Key`, keypad, and digit key-code forms resolve consistently while modifiers and unsupported digits are rejected. |
+| Focused mismatch export | The active filtered audit serializes as deterministic JSON and CSV, retaining replay metadata, fingerprints, selected filter, affected entities, and only filtered difference lines. CSV escapes embedded quotes and delimiters; generated file names sanitize replay identifiers. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
 
@@ -67,3 +68,5 @@ The audit panel exposes **ALL**, **PHASE / STATE**, **TILE**, **UNIT**, and **AC
 Use **F2** and **F3** to move through the prior and next diff categories during playback. The reserved keys are parsed before configurable replay timeline bindings and do not reuse any key accepted by the settings-based binding capture. They are also listed in the shortcut reference, ensuring the active filter can be changed without moving focus to the command-table buttons.
 
 Use **1**, **2**, **3**, **4**, and **5** to select All, Phase / state, Tile, Unit, and Action filters immediately. Direct selection is parsed after the F2/F3 navigator but before configurable timeline bindings, preserving deterministic input behavior and ensuring numeric selection cannot step or scrub the replay.
+
+The replay audit’s **EXPORT FILTER JSON** and **EXPORT FILTER CSV** actions open a native save dialog. The export builder receives the current inspector report plus selected filter result, so export content does not infer state from rendering. JSON is intended for structured diagnostic tooling, while CSV offers a flat, spreadsheet-friendly row per filtered difference. A filter with no differences still exports its full replay metadata and an empty difference record, making the output unambiguous.
