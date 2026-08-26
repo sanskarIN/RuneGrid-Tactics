@@ -632,6 +632,38 @@ public sealed class TacticalGridPathfindingTests
         Assert.Contains("full audit", reference[2].Description);
     }
 
+    [Fact]
+    public void ReplayMismatchExport_ProducesStableJsonCsvAndSafeFocusedFileNames()
+    {
+        var export = new ReplayMismatchExport(
+            SchemaVersion: 1,
+            EncounterId: "training-field",
+            Seed: "seed/alpha",
+            Mode: "Training",
+            Difficulty: "Field",
+            ReplayCreatedAt: "2026-08-26T00:00:00.0000000Z",
+            CurrentActionIndex: 2,
+            ActionCount: 4,
+            Filter: "Tile",
+            ExpectedFingerprint: "ABCD1234",
+            CurrentFingerprint: "DEAD5678",
+            IsDeterministicMatch: false,
+            AffectedTiles: new[] { "2:3" },
+            AffectedUnits: new[] { "vanguard-1" },
+            Differences: new[] { new ReplayMismatchExportLine("Tile", "tile 2:3: expected [kind=\"Floor\"], actual [kind=Hazard, elevated]") });
+
+        var json = export.ToJson();
+        var csv = export.ToCsv();
+
+        using var document = JsonDocument.Parse(json);
+        Assert.Equal("Tile", document.RootElement.GetProperty("filter").GetString());
+        Assert.Equal("2:3", document.RootElement.GetProperty("affectedTiles")[0].GetString());
+        Assert.Contains("\"filtered_replay_mismatch\"", csv);
+        Assert.Contains("\"Tile\"", csv);
+        Assert.Contains("\"\"Floor\"\"", csv);
+        Assert.Equal("runegrid-replay-diff-training-field-seed-alpha-action-2-tile.csv", export.BuildFileName(".CSV"));
+    }
+
     private static TacticalGrid CreateGrid(int width, int height, Action<List<Tile>>? configure = null)
     {
         var tiles = Enumerable.Range(0, height)
