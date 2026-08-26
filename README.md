@@ -55,6 +55,8 @@ For direct selection, press **1** for All, **2** for Phase / state, **3** for Ti
 
 Use **EXPORT FILTER JSON** or **EXPORT FILTER CSV** in the replay audit to save the currently active filtered report through the native save dialog. Both formats include replay identity, action position, selected filter, expected/current fingerprints, match status, affected tiles and units, and exactly the filtered difference lines. JSON retains structured fields for tooling; CSV repeats the metadata per difference row for spreadsheet use. The default file name embeds the encounter, seed, action index, and active filter.
 
+Under **SETTINGS & ACCESSIBILITY**, enable **Automatically export replay mismatch reports** to write a full **All**-filter JSON diagnostic the first time each unique determinism mismatch signature is encountered. Automatic reports are stored in the native application’s local `user://` data directory with a deterministic signature suffix; the replay audit confirms the exported path. The setting is off by default, and repeated renders or revisiting the same divergence do not create duplicate files.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status

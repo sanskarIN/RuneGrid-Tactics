@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.15-auto-replay-mismatch-export] — 2026-08-26
+
+### Added
+
+Added an opt-in **Automatically export replay mismatch reports** accessibility setting. When a new determinism divergence appears, the native inspector writes one full-audit JSON report to local `user://` storage, shows its resolved path, and avoids duplicate writes for the same action-and-fingerprint signature.
+
+### Validation
+
+Added deterministic signature deduplication, persisted-state, safe user-path, and repeatability coverage. Native validation now requires automatic export state, local preference normalization, inspector route, and named scenario.
+
 ## [0.3.14-filtered-replay-export] — 2026-08-26
 
 ### Added
