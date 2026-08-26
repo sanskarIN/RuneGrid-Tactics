@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.11-filtered-replay-diffs] — 2026-08-26
+
+### Added
+
+Added filtered replay determinism diffs for **ALL**, **PHASE / STATE**, **TILE**, **UNIT**, and **ACTION** categories. The inspector now highlights selected affected tiles and living units directly on the replay board while preserving the complete audit through the All filter.
+
+### Validation
+
+Added deterministic classification and marker extraction coverage. Native validation now requires the filter model, inspector controls, and tile/unit board marker route.
+
 ## [0.3.10-replay-mismatch-warnings] — 2026-08-24
 
 ### Added

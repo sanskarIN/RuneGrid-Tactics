@@ -47,6 +47,8 @@ On the first replay inspection, a local **INTRODUCING REPLAY INSPECTOR** tooltip
 
 If the replay inspector’s expected reconstruction differs from the visible playback state, it presents a non-blocking **REPLAY DETERMINISM WARNING**. The tooltip identifies the action position and first detected difference, directs the player to **DETERMINISM AUDIT**, and offers **VIEW SHORTCUTS** for safe navigation. Dismissing a warning acknowledges only that exact action and fingerprint signature; a changed mismatch remains visible.
 
+The **DETERMINISM AUDIT** now includes a **FILTERED DIFF · AFFECTED BOARD MARKERS** control set. Choose **ALL**, **PHASE / STATE**, **TILE**, **UNIT**, or **ACTION** to isolate the relevant mismatch lines. Tile filters draw a warm outline on affected cells, while unit filters draw a delta ring and marker around affected living units; **ALL** restores the complete human-readable audit.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status
