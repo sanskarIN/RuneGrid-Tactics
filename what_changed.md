@@ -179,3 +179,16 @@
 | Board clarity | Selected mismatched tiles gain a warm inner border. Selected mismatched living units gain a delta ring and marker, without changing tactical selection or replay state. |
 | Verification | Added category isolation, marker extraction, and human-readable filtered output coverage; validator now requires the diff model, inspector route, and board markers. Godot C# Release builds with zero warnings/errors and the native suite passes **34 tests, 0 failures**. |
 | GitHub | Pushed four focused filtered-audit, test, validation, and documentation commits ending at `92638b7`, with repository-local author address `sanskarin@outlook.in`. |
+
+## v0.3.12-replay-diff-filter-shortcuts — Keyboard filter navigation
+
+**Date:** 2026-08-26
+
+| Area | Delivered change |
+| --- | --- |
+| Reserved commands | Added unmodified **F2** for the previous diff filter and **F3** for the next one. These keys are outside the settings-supported binding set, preventing collision with configurable timeline controls. |
+| Cycling | Added wrap-around navigation through All, Phase / state, Tile, Unit, and Action filter categories. The command-table heading reports the active category and F2/F3 hint. |
+| Shortcut reference | Added a dedicated **FILTERED DIFF NAVIGATION** section with command names, keys, and effects. |
+| Input safety | Filter cycling occurs after text-entry and reference-overlay guards, before customizable timeline binding resolution, so keyboard intent remains deterministic. |
+| Verification | Added framework-independent forward/backward cycle, shortcut parsing, modifier rejection, and reference coverage; validator now requires the navigator, inspector route, active caption, and scenario. Godot C# Release builds with zero warnings/errors and the native suite passes **35 tests, 0 failures**. |
+| GitHub | Pushed four focused shortcut, test, validation, and documentation commits ending at `fd1dba7`, with repository-local author address `sanskarin@outlook.in`. |
