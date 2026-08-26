@@ -93,6 +93,13 @@ public partial class GameRoot : Node
             GetViewport().SetInputAsHandled();
             return;
         }
+        if (ReplayDiffFilterNavigator.TryParseDirectShortcut(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var directDiffCategory))
+        {
+            _replayDiffCategory = directDiffCategory;
+            ShowReplayInspector();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
         if (!_services.SaveData.Accessibility.ReplayKeyBindings.TryResolve(key.Keycode.ToString(), key.CtrlPressed || key.ShiftPressed || key.AltPressed || key.MetaPressed, out var shortcut)) return;
 
         switch (shortcut)
@@ -365,7 +372,7 @@ public partial class GameRoot : Node
         var audit = MakeColumn(8); audit.CustomMinimumSize = new Vector2(330, 0);
         audit.AddChild(MakeLabel("DETERMINISM AUDIT", 15, _route));
         audit.AddChild(MakeLabel(report.DeterminismDifference.IsMatch ? "MATCH · reconstructed state equals live replay." : $"MISMATCH · {report.DeterminismDifference.Lines.Count} difference(s). Choose a filter to focus the audit and board markers.", 13, report.DeterminismDifference.IsMatch ? new Color("A9D9B3") : new Color("F1A18D"), wrap: true));
-        audit.AddChild(MakeLabel($"FILTERED DIFF · AFFECTED BOARD MARKERS · F2/F3 CYCLE · {ReplayDiffFilter.LabelFor(_replayDiffCategory).ToUpperInvariant()}", 12, new Color("D4BF7E")));
+        audit.AddChild(MakeLabel($"FILTERED DIFF · AFFECTED BOARD MARKERS · F2/F3 CYCLE · 1-5 DIRECT · {ReplayDiffFilter.LabelFor(_replayDiffCategory).ToUpperInvariant()}", 12, new Color("D4BF7E")));
         var filters = new GridContainer { Columns = 3 }; filters.AddThemeConstantOverride("h_separation", 5); filters.AddThemeConstantOverride("v_separation", 5);
         foreach (var category in Enum.GetValues<ReplayDiffCategory>())
         {

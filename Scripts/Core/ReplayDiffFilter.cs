@@ -81,6 +81,24 @@ public static class ReplayDiffFilterNavigator
         return false;
     }
 
+    /// <summary>Maps the reserved 1–5 keys to exact filter categories without touching configurable timeline bindings.</summary>
+    public static bool TryParseDirectShortcut(string? key, bool hasModifier, out ReplayDiffCategory category)
+    {
+        category = default;
+        if (hasModifier || string.IsNullOrWhiteSpace(key)) return false;
+        var compact = key.Trim().Replace("_", string.Empty).Replace("-", string.Empty).Replace(" ", string.Empty).ToUpperInvariant();
+        category = compact switch
+        {
+            "1" or "KEY1" or "D1" or "KP1" => ReplayDiffCategory.All,
+            "2" or "KEY2" or "D2" or "KP2" => ReplayDiffCategory.Phase,
+            "3" or "KEY3" or "D3" or "KP3" => ReplayDiffCategory.Tile,
+            "4" or "KEY4" or "D4" or "KP4" => ReplayDiffCategory.Unit,
+            "5" or "KEY5" or "D5" or "KP5" => ReplayDiffCategory.Action,
+            _ => default
+        };
+        return compact is "1" or "KEY1" or "D1" or "KP1" or "2" or "KEY2" or "D2" or "KP2" or "3" or "KEY3" or "D3" or "KP3" or "4" or "KEY4" or "D4" or "KP4" or "5" or "KEY5" or "D5" or "KP5";
+    }
+
     private static ReplayDiffCategory Cycle(ReplayDiffCategory current, int offset)
     {
         var currentIndex = Array.IndexOf(Categories, current);
@@ -96,6 +114,11 @@ public static class ReplayDiffFilterShortcutReference
     public static IReadOnlyList<ReplayDiffFilterShortcutReferenceLine> Build() =>
     [
         new("Previous diff filter", "F2", "Move to the prior focused mismatch category."),
-        new("Next diff filter", "F3", "Move to the next focused mismatch category.")
+        new("Next diff filter", "F3", "Move to the next focused mismatch category."),
+        new("All diff filters", "1", "Show the full audit and all board markers."),
+        new("Phase / state filter", "2", "Show phase and state mismatches."),
+        new("Tile filter", "3", "Show mismatched tiles and their board outlines."),
+        new("Unit filter", "4", "Show mismatched units and their board markers."),
+        new("Action filter", "5", "Show mismatched recorded actions.")
     ];
 }
