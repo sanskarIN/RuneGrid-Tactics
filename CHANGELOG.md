@@ -2,6 +2,16 @@
 
 All notable native RuneGrid Tactics changes are recorded here.
 
+## [0.3.12-replay-diff-filter-shortcuts] — 2026-08-26
+
+### Added
+
+Added reserved replay diff filter keyboard navigation: **F2** selects the previous category and **F3** selects the next category, wrapping through All, Phase / state, Tile, Unit, and Action. The current filter and commands appear in the audit heading and shortcut reference.
+
+### Validation
+
+Added deterministic category-cycle, shortcut parsing, modifier rejection, and shortcut-reference coverage. Native validation now requires the navigator, reserved key route, active filter caption, and named scenario.
+
 ## [0.3.11-filtered-replay-diffs] — 2026-08-26
 
 ### Added

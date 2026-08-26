@@ -39,6 +39,7 @@ The GitHub Actions Godot .NET workflow restores, compiles, and runs the same tes
 | First-time inspector onboarding | The local onboarding state begins visible, serializes with the player record, and remains dismissed after the player acknowledges the inspector introduction or opens the shortcut reference. |
 | Determinism mismatch warnings | A mismatch warning key includes action position and both fingerprints, so acknowledgement persists only for the exact observed divergence while changed action positions or state signatures warn again. |
 | Filtered replay diffs | Stable replay diff lines classify as phase/state, tile, unit, or action records. Each filter returns only its category while extracting tile coordinates and unit identifiers for focused native board markers. |
+| Diff filter keyboard cycling | Reserved unmodified F2 and F3 keys cycle backward and forward through every diff category with wrapping; modifier combinations and unrelated keys are rejected so configurable timeline bindings remain unaffected. |
 
 When introducing a new mobility profile, tile type, route intent, or routing penalty, add a deterministic scenario to `TacticalGridPathfindingTests.cs` before changing encounter balance. This keeps navigation behavior explainable and protects replay determinism.
 
@@ -61,3 +62,5 @@ On first opening an archived replay, the inspector presents a compact **INTRODUC
 When the expected and visible snapshots differ, the inspector displays a non-blocking **REPLAY DETERMINISM WARNING**. It exposes the first human-readable difference, points to the persistent **DETERMINISM AUDIT** panel, and offers shortcut help without preventing playback interaction. Acknowledgement is keyed to the current action index plus expected and current fingerprints, preventing duplicate notices for the same state while preserving warnings for new divergences.
 
 The audit panel exposes **ALL**, **PHASE / STATE**, **TILE**, **UNIT**, and **ACTION** filters. The core filter parses the canonical difference format rather than presentation layout, so test coverage verifies each category and its affected entity extraction. The replay board receives only the selected filter’s markers: tiles gain a warm inner outline and living units gain a delta ring, without altering tactical selection or replay state.
+
+Use **F2** and **F3** to move through the prior and next diff categories during playback. The reserved keys are parsed before configurable replay timeline bindings and do not reuse any key accepted by the settings-based binding capture. They are also listed in the shortcut reference, ensuring the active filter can be changed without moving focus to the command-table buttons.

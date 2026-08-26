@@ -49,6 +49,8 @@ If the replay inspector’s expected reconstruction differs from the visible pla
 
 The **DETERMINISM AUDIT** now includes a **FILTERED DIFF · AFFECTED BOARD MARKERS** control set. Choose **ALL**, **PHASE / STATE**, **TILE**, **UNIT**, or **ACTION** to isolate the relevant mismatch lines. Tile filters draw a warm outline on affected cells, while unit filters draw a delta ring and marker around affected living units; **ALL** restores the complete human-readable audit.
 
+During replay inspection, use **F2** for the previous diff filter and **F3** for the next one. These reserved commands cycle through All, Phase / state, Tile, Unit, and Action, wrap at both ends, and remain separate from configurable timeline navigation bindings. The shortcut reference lists both commands under **FILTERED DIFF NAVIGATION**.
+
 The repository intentionally ships no user account, advertising network, or cloud persistence dependency. Core gameplay remains local to the native Godot application.
 
 ## Current build status
